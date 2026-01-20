@@ -17,6 +17,7 @@
 
 package io.appform.jsonrules;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Builder;
@@ -40,21 +41,11 @@ public class ExpressionEvaluationContext {
                                        final Map<OptionKeys, Object> options) {
         this.node = node;
         this.options = options == null ? new HashMap<>() : options;
-        if (!(node instanceof JSONObject || node instanceof JSONArray)) {
-            throw new IllegalArgumentException("Node must be a JSONObject or JSONArray");
-        }
     }
 
     public static ExpressionEvaluationContext construct(final String json,
                                                         final Map<OptionKeys, Object> options) {
-        Object node = JSONObject.parseObject(json, JSONObject.class);
+        Object node = JSON.parse(json);
         return new ExpressionEvaluationContext(node, options);
-    }
-
-    public void setNode(Object node) {
-        if (!(node instanceof JSONObject || node instanceof JSONArray)) {
-            throw new IllegalArgumentException("Node must be a JSONObject or JSONArray");
-        }
-        this.node = node;
     }
 }
