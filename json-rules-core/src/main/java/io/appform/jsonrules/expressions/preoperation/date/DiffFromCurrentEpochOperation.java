@@ -1,6 +1,6 @@
 package io.appform.jsonrules.expressions.preoperation.date;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.OptionKeys;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
@@ -17,15 +17,16 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "current_epoch_diff")
 public class DiffFromCurrentEpochOperation extends PreOperation<Number> {
     protected DiffFromCurrentEpochOperation() {
         super(PreOperationType.current_epoch_diff);
     }
 
 
-    private Number compute(JsonNode evaluatedNode, long currentEpoch) {
-        if (evaluatedNode.isLong()) {
-            return currentEpoch - evaluatedNode.asLong();
+    private Number compute(Object evaluatedNode, long currentEpoch) {
+        if (evaluatedNode instanceof Long || evaluatedNode instanceof Integer) {
+            return currentEpoch - ((Number) evaluatedNode).longValue();
         }
         throw new IllegalArgumentException("Evaluated node does not represent a valid epoch");
     }
@@ -33,8 +34,10 @@ public class DiffFromCurrentEpochOperation extends PreOperation<Number> {
     @Override
     public Number compute(ExpressionEvaluationContext context) {
         try {
-            long currentEpoch = (long)(context.getOptions().getOrDefault(OptionKeys.SYSTEM_TIME, System.currentTimeMillis()));
-            return compute(context.getNode(), currentEpoch);
+            final long currentEpoch = (long) (context.getOptions()
+                    .getOrDefault(OptionKeys.SYSTEM_TIME, System.currentTimeMillis()));
+            final Object node = context.getNode();
+            return compute(node, currentEpoch);
         } catch (Exception e) {
             throw new IllegalArgumentException("Operands does not represent a valid epoch", e);
         }

@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.numeric;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
@@ -31,6 +32,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "between")
 public class BetweenExpression extends JsonPathBasedExpression {
     private Number lowerBound;
     private Number upperBound;
@@ -57,27 +59,34 @@ public class BetweenExpression extends JsonPathBasedExpression {
     }
 
     @Override
-    protected boolean evaluate(ExpressionEvaluationContext context, String path, JsonNode evaluatedNode) {
-        if (null == evaluatedNode || !evaluatedNode.isNumber()) {
+    protected boolean evaluate(ExpressionEvaluationContext context, String path, Object evaluatedNode) {
+        if (null == evaluatedNode || !(evaluatedNode instanceof Number)) {
             return false;
         }
+
+        Number nodeValue = (Number) evaluatedNode;
         boolean finalResult = false;
-        if (evaluatedNode.isIntegralNumber()) {
-            finalResult = includeLowerBound ? evaluatedNode.asLong() >= lowerBound.longValue()
-                    : evaluatedNode.asLong() > lowerBound.longValue();
-            finalResult &= includeUpperBound ? evaluatedNode.asLong() <= upperBound.longValue()
-                    : evaluatedNode.asLong() < upperBound.longValue();
-        } else if (evaluatedNode.isFloatingPointNumber()) {
-            finalResult = includeLowerBound ? evaluatedNode.doubleValue() >= lowerBound.doubleValue()
-                    : evaluatedNode.doubleValue() > lowerBound.doubleValue();
-            finalResult &= includeUpperBound ? evaluatedNode.doubleValue() <= upperBound.doubleValue()
-                    : evaluatedNode.doubleValue() < upperBound.doubleValue();
+
+        // Check if both are integral or floating point
+        boolean nodeIsIntegral = (nodeValue instanceof Integer || nodeValue instanceof Long ||
+                                   nodeValue instanceof Short || nodeValue instanceof Byte);
+
+        if (nodeIsIntegral) {
+            finalResult = includeLowerBound ? nodeValue.longValue() >= lowerBound.longValue()
+                    : nodeValue.longValue() > lowerBound.longValue();
+            finalResult &= includeUpperBound ? nodeValue.longValue() <= upperBound.longValue()
+                    : nodeValue.longValue() < upperBound.longValue();
+        } else {
+            finalResult = includeLowerBound ? nodeValue.doubleValue() >= lowerBound.doubleValue()
+                    : nodeValue.doubleValue() > lowerBound.doubleValue();
+            finalResult &= includeUpperBound ? nodeValue.doubleValue() <= upperBound.doubleValue()
+                    : nodeValue.doubleValue() < upperBound.doubleValue();
         }
         return finalResult;
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

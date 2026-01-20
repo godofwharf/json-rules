@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.meta;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
@@ -29,6 +30,7 @@ import lombok.Builder;
 /**
  * Check if a field exists
  */
+@JSONType(typeName = "exists")
 public class ExistsExpression extends JsonPathBasedExpression {
     public ExistsExpression() {
         super(ExpressionType.exists);
@@ -40,12 +42,12 @@ public class ExistsExpression extends JsonPathBasedExpression {
     }
 
     @Override
-    protected boolean evaluate(ExpressionEvaluationContext context, String path, JsonNode evaluatedNode) {
+    protected boolean evaluate(ExpressionEvaluationContext context, String path, Object evaluatedNode) {
         return !ComparisonUtils.isNodeMissingOrNull(evaluatedNode);
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

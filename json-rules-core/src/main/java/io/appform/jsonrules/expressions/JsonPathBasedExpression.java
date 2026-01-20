@@ -17,12 +17,11 @@
 
 package io.appform.jsonrules.expressions;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.jayway.jsonpath.PathNotFoundException;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
+import io.appform.jsonrules.config.EvaluationConfiguration;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.utils.JsonPathUtils;
 import lombok.Data;
@@ -30,7 +29,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.val;
 
-import static io.appform.jsonrules.utils.ComparisonUtils.mapper;
 
 /**
  * All expressions that evaluate a json path uses this.
@@ -57,25 +55,73 @@ public abstract class JsonPathBasedExpression extends Expression {
 
     @Override
     public final boolean evaluate(ExpressionEvaluationContext context) {
-        JsonNode nodeAtPath = null;
+        Object nodeAtPath;
         try {
-            JsonNode nodeValue = JsonPathUtils.read(context.getNode(), path);
-            if (nodeValue != null) {
-                nodeAtPath = nodeValue;
+            Object rawValue = JsonPathUtils.read(EvaluationConfiguration.getInstance().getConfiguration(), context.getNode(), path);
+            if (rawValue != null) {
+                nodeAtPath = rawValue;
             } else {
-                // Node exists; but value is null. Proceed as missing node.
-                nodeAtPath = MissingNode.getInstance();
+                // rawValue is null - could be either explicit null value OR missing path.
+                // For simple paths like $.key, check if the key actually exists
+                if (isSimplePathMissing(context.getNode(), path)) {
+                    // Path doesn't exist - use default result
+                    return defaultResult;
+                }
+                // Path exists but value is null - treat as null
+                nodeAtPath = null;
             }
         } catch (PathNotFoundException exception) {
             // Using default result when the 'path' doesn't exist
             return defaultResult;
         }
 
-        JsonNode evaluatedNode = applyPreoperation(context, nodeAtPath);
+        Object evaluatedNode = applyPreoperation(context, nodeAtPath);
         return evaluate(context, path, evaluatedNode);
     }
 
-    private JsonNode applyPreoperation(ExpressionEvaluationContext globalContext, JsonNode nodeAtPath) {
+    /**
+     * For a simple definite path like $.key or nested paths like $.a.b.c, check if it exists.
+     * Returns true if the path is definitely missing, false if it exists or we can't determine.
+     */
+    private boolean isSimplePathMissing(Object node, String path) {
+        // Handle paths starting with $.
+        if (path == null || !path.startsWith("$.") || path.length() <= 2) {
+            return false;
+        }
+
+        String pathRemainder = path.substring(2); // Remove $.
+
+        // Only handle simple property paths (no arrays, wildcards, filters, etc.)
+        if (pathRemainder.contains("[") || pathRemainder.contains("*") ||
+            pathRemainder.contains("?") || pathRemainder.contains("@")) {
+            return false;
+        }
+
+        // Split by dots to handle nested paths like a.b.c
+        String[] parts = pathRemainder.split("\\.");
+        Object current = node;
+
+        for (String part : parts) {
+            if (!(current instanceof java.util.Map)) {
+                // Can't traverse further if current is not a Map
+                return false;
+            }
+
+            java.util.Map<?, ?> map = (java.util.Map<?, ?>) current;
+            if (!map.containsKey(part)) {
+                // This key doesn't exist - path is missing
+                return true;
+            }
+
+            // Move to next level
+            current = map.get(part);
+        }
+
+        // All parts of the path exist
+        return false;
+    }
+
+    private Object applyPreoperation(ExpressionEvaluationContext globalContext, Object nodeAtPath) {
         if (null == preoperation) {
             return nodeAtPath;
         }
@@ -85,9 +131,8 @@ public abstract class JsonPathBasedExpression extends Expression {
                 .options(globalContext.getOptions())
                 .build();
 
-        val computedValue = preoperation.compute(newContext);
-        return mapper.valueToTree(computedValue);
+        return preoperation.compute(newContext);
     }
 
-    protected abstract boolean evaluate(ExpressionEvaluationContext context, final String path, JsonNode evaluatedNode);
+    protected abstract boolean evaluate(ExpressionEvaluationContext context, final String path, Object evaluatedNode);
 }

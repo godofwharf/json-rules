@@ -1,24 +1,26 @@
 package io.appform.jsonrules.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import io.appform.jsonrules.jsonpath.providers.OptimizedJacksonJsonNodeJsonProvider;
+import io.appform.jsonrules.jsonpath.providers.Fastjson2JsonProvider;
+import io.appform.jsonrules.jsonpath.providers.Fastjson2MappingProvider;
 import lombok.Getter;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-public final class JacksonConfiguration implements Configuration.Defaults {
-    @Getter
-    private static final JacksonConfiguration instance = new JacksonConfiguration();
+/**
+ * JsonPath defaults based on fastjson2 {@code JSONObject}/{@code JSONArray}.
+ */
+public final class Fastjson2Configuration implements Configuration.Defaults {
 
-    private final JacksonJsonNodeJsonProvider jsonProvider = new JacksonJsonNodeJsonProvider();
-    private final JacksonMappingProvider mappingProvider = new JacksonMappingProvider();
+    @Getter
+    private static final Fastjson2Configuration instance = new Fastjson2Configuration();
+
+    private final Fastjson2JsonProvider jsonProvider = new Fastjson2JsonProvider();
+    private final Fastjson2MappingProvider mappingProvider = new Fastjson2MappingProvider();
 
     @Override
     public JsonProvider jsonProvider() {
@@ -33,10 +35,6 @@ public final class JacksonConfiguration implements Configuration.Defaults {
     @Override
     public Set<Option> options() {
         return EnumSet.noneOf(Option.class);
-    }
-
-    public ObjectMapper getObjectMapper() {
-        return jsonProvider.getObjectMapper();
     }
 
     public Configuration getConfiguration() {

@@ -16,14 +16,14 @@
  */
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSONObject;
 import io.appform.jsonrules.expressions.composite.AndExpression;
 import io.appform.jsonrules.expressions.composite.NotExpression;
 import io.appform.jsonrules.expressions.composite.OrExpression;
 import io.appform.jsonrules.expressions.debug.FailureDetail;
 import io.appform.jsonrules.expressions.numeric.GreaterThanExpression;
 import io.appform.jsonrules.expressions.numeric.LessThanExpression;
+import io.appform.jsonrules.utils.TestJson;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +33,10 @@ import java.util.Objects;
 public class CompositeExpressionDebugTest {
 
     private ExpressionEvaluationContext context;
-    private ObjectMapper mapper;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(
-                "{ \"v1\": 20, \"v2\": 30, \"v3\": 20.001, \"value\": 20, \"string\" : \"Hello\", \"string1\" : \"Hello1\", \"kid\": null, \"boolean\" : true }");
+        JSONObject node = TestJson.obj("{ \"v1\": 20, \"v2\": 30, \"v3\": 20.001, \"value\": 20, \"string\" : \"Hello\", \"string1\" : \"Hello1\", \"kid\": null, \"boolean\" : true }");
         context = ExpressionEvaluationContext.builder()
                 .node(node)
                 .build();

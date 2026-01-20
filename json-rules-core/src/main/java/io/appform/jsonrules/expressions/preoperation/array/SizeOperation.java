@@ -17,8 +17,9 @@
 
 package io.appform.jsonrules.expressions.preoperation.array;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
@@ -29,6 +30,7 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "size")
 public class SizeOperation extends PreOperation<Number> {
 
     public SizeOperation() {
@@ -37,9 +39,21 @@ public class SizeOperation extends PreOperation<Number> {
 
     @Override
     public Number compute(ExpressionEvaluationContext context) {
-        JsonNode node = context.getNode();
-        if (node.isArray()) {
-            return ((ArrayNode) node).size();
+        final Object node = context.getNode();
+        if (node instanceof JSONArray) {
+            return ((JSONArray) node).size();
+        }
+        if (node instanceof JSONObject) {
+            return ((JSONObject) node).size();
+        }
+        if (node instanceof java.util.Collection) {
+            return ((java.util.Collection<?>) node).size();
+        }
+        if (node instanceof java.util.Map) {
+            return ((java.util.Map<?, ?>) node).size();
+        }
+        if (node != null && node.getClass().isArray()) {
+            return java.lang.reflect.Array.getLength(node);
         }
         throw new IllegalArgumentException("Size operation is not supported");
     }

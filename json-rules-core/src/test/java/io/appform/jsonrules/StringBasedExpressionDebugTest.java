@@ -1,7 +1,6 @@
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSONObject;
 import io.appform.jsonrules.expressions.debug.FailureDetail;
 import io.appform.jsonrules.expressions.string.*;
 import org.junit.Assert;
@@ -13,13 +12,10 @@ import java.util.Objects;
 public class StringBasedExpressionDebugTest {
 
     private ExpressionEvaluationContext context;
-    private ObjectMapper mapper;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(
-                "{ \"value\": 20, \"emptyString\" : \"\", \"s3\" : \"Hello.*\", \"s1\" : \"HelloAllHello\", \"s2\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"boolean\" : true }");
+        JSONObject node = io.appform.jsonrules.utils.TestJson.obj("{ \"value\": 20, \"emptyString\" : \"\", \"s3\" : \"Hello.*\", \"s1\" : \"HelloAllHello\", \"s2\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"boolean\" : true }");
         context = ExpressionEvaluationContext.builder()
                 .node(node)
                 .build();

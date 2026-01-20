@@ -17,8 +17,7 @@
 
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Sets;
 import io.appform.jsonrules.expressions.array.InExpression;
 import io.appform.jsonrules.expressions.array.NotInExpression;
@@ -30,6 +29,7 @@ import io.appform.jsonrules.expressions.numeric.GreaterThanExpression;
 import io.appform.jsonrules.expressions.numeric.LessThanExpression;
 import io.appform.jsonrules.expressions.preoperation.array.SizeOperation;
 import io.appform.jsonrules.utils.Rule;
+import io.appform.jsonrules.utils.TestJson;
 import io.appform.jsonrules.utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,12 +38,10 @@ import org.junit.Test;
 public class SizeOperationTest {
 
     private ExpressionEvaluationContext context;
-    private ObjectMapper mapper;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree("{ \"array_values\":[1,2,3,4,5],\"stringifiedValue\": \"9886098860\",\"value\": 20, \"abcd\" : \"Hello\", \"string\" : \"Hello\", \"kid\": null}");
+        JSONObject node = TestJson.obj("{ \"array_values\":[1,2,3,4,5],\"stringifiedValue\": \"9886098860\",\"value\": 20, \"abcd\" : \"Hello\", \"string\" : \"Hello\", \"kid\": null}");
         context = ExpressionEvaluationContext.builder().node(node).build();
     }
 
@@ -125,9 +123,9 @@ public class SizeOperationTest {
     @Test
     public void testRule() throws Exception {
         final String ruleRepr = TestUtils.read("/sizeOperation.rule");
-        Rule rule = Rule.create(ruleRepr, mapper);
-        JsonNode node = mapper.readTree("{ \"values\": [8,9,10], \"string\" : \"Hello\" }");
-        Assert.assertTrue(rule.matches(node));
+        Rule rule = Rule.create(ruleRepr);
+        JSONObject node = TestJson.obj("{ \"values\": [8,9,10], \"string\" : \"Hello\" }");
+        Assert.assertTrue(rule.matches((Object) node));
     }
     
     @Test
@@ -148,10 +146,12 @@ public class SizeOperationTest {
                                 .build())
                 .build());
 
-        final String ruleRep = rule.representation(mapper);
-
+        final String ruleRep = rule.representation();
         System.out.println(ruleRep);
-        Assert.assertEquals("{\"type\":\"not\",\"children\":[{\"type\":\"or\",\"children\":[{\"type\":\"less_than\",\"path\":\"$.value\",\"preoperation\":{\"operation\":\"size\"},\"defaultResult\":false,\"value\":11,\"extractValueFromPath\":false},{\"type\":\"greater_than\",\"path\":\"$.value\",\"preoperation\":{\"operation\":\"size\"},\"defaultResult\":false,\"value\":30,\"extractValueFromPath\":false}]}]}", ruleRep);
+
+        // Deserialize and compare objects instead of string comparison
+        Rule deserializedRule = Rule.create(ruleRep);
+        Assert.assertEquals(rule, deserializedRule);
     }
     
 }

@@ -17,7 +17,7 @@
 
 package io.appform.jsonrules.expressions.preoperation.string;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
@@ -28,6 +28,7 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "length")
 public class LengthOperation extends PreOperation<Number> {
 
     private static final String EMPTY_STRING = "";
@@ -38,9 +39,12 @@ public class LengthOperation extends PreOperation<Number> {
 
     @Override
     public Number compute(ExpressionEvaluationContext context) {
-        JsonNode node = context.getNode();
-        if (node.isTextual()) {
-            return node.asText(EMPTY_STRING).length();
+        final Object node = context.getNode();
+        if (node instanceof CharSequence) {
+            return ((CharSequence) node).length();
+        }
+        if (node instanceof String) {
+            return ((String) node).length();
         }
         throw new IllegalArgumentException("Length operation is not supported");
     }

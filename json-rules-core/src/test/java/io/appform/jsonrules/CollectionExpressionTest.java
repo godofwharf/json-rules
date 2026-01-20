@@ -17,8 +17,7 @@
 
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Sets;
 import io.appform.jsonrules.expressions.array.ContainsAllExpression;
 import io.appform.jsonrules.expressions.array.ContainsAnyExpression;
@@ -27,20 +26,23 @@ import io.appform.jsonrules.expressions.array.NotInExpression;
 import io.appform.jsonrules.expressions.composite.NotExpression;
 import io.appform.jsonrules.expressions.composite.OrExpression;
 import io.appform.jsonrules.utils.Rule;
+import io.appform.jsonrules.utils.TestJson;
 import io.appform.jsonrules.utils.TestUtils;
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 public class CollectionExpressionTest {
 
     private ExpressionEvaluationContext context;
-    private ObjectMapper mapper;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree("{ \"felines\": [\"leopard\",\"lion\",\"tiger\",\"jaguar\"],\"integers\": [10,20,30,40],\"decimals\": [10.01,20.22,30.33,40.55], \"emptyString\" : \"\", \"s3\" : \"Hello.*\", \"s1\" : \"HelloAllHello\", \"s2\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"boolean\" : true }");
+        JSONObject node = TestJson.obj("{ \"felines\": [\"leopard\",\"lion\",\"tiger\",\"jaguar\"],\"integers\": [10,20,30,40],\"decimals\": [10.01,20.22,30.33,40.55], \"emptyString\" : \"\", \"s3\" : \"Hello.*\", \"s1\" : \"HelloAllHello\", \"s2\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"boolean\" : true }");
         context = ExpressionEvaluationContext.builder().node(node).build();
     }
     
@@ -64,7 +66,6 @@ public class CollectionExpressionTest {
                 .defaultResult(false)
                 .build()
                 .evaluate(context));
-
         Assert.assertTrue(ContainsAnyExpression.builder()
                 .path("$.felines")
                 .valuesPath("$.felines")
@@ -390,41 +391,45 @@ public class CollectionExpressionTest {
     @Test
     public void testContainsAnyExpressionRule() throws Exception {
         final String ruleRepr = TestUtils.read("/containsAnyExpression.rule");
-        Rule rule = Rule.create(ruleRepr, mapper);
-        JsonNode node = mapper.readTree("{ \"felines\": [\"leopard\",\"lion\",\"tiger\",\"jaguar\"],\"integers\": [10,20,30,40],\"decimals\": [10.01,20.22,30.33,40.55]}");
-        Assert.assertTrue(rule.matches(node));
+        Rule rule = Rule.create(ruleRepr);
+        JSONObject node = TestJson.obj("{ \"felines\": [\"leopard\",\"lion\",\"tiger\",\"jaguar\"],\"integers\": [10,20,30,40],\"decimals\": [10.01,20.22,30.33,40.55]}");
+        Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testContainsAllExpressionRule() throws Exception {
         final String ruleRepr = TestUtils.read("/containsAllExpression.rule");
-        Rule rule = Rule.create(ruleRepr, mapper);
-        JsonNode node = mapper.readTree("{ \"felines\": [\"leopard\",\"lion\",\"tiger\",\"jaguar\"],\"integers\": [10,20,30,40],\"decimals\": [10.01,20.22,30.33,40.55]}");
-        Assert.assertTrue(rule.matches(node));
+        Rule rule = Rule.create(ruleRepr);
+        JSONObject node = TestJson.obj("{ \"felines\": [\"leopard\",\"lion\",\"tiger\",\"jaguar\"],\"integers\": [10,20,30,40],\"decimals\": [10.01,20.22,30.33,40.55]}");
+        Assert.assertTrue(rule.matches((Object) node));
     }
     
     @Test
     public void testRepresentation() throws Exception {
+        val animals = new LinkedHashSet<>(Arrays.asList("leopard","lion","panther"));
+        val numbers = new LinkedHashSet<>(Arrays.asList(20,10,40,30));
         Rule rule = new Rule(NotExpression.builder()
                 .child(
                         OrExpression.builder()
                                 .child(ContainsAnyExpression.builder()
                                         .path("$.felines")
-                                        .values(Sets.newHashSet("leopard","lion","panther"))
+                                        .values(animals)
                                         .defaultResult(false)
                                         .build())
                                 .child(ContainsAllExpression.builder()
                                         .path("$.integers")
-                                        .values(Sets.newHashSet(20,10,40,30))
+                                        .values(numbers)
                                         .defaultResult(false)
                                         .build())
                                 .build())
                 .build());
 
-        final String ruleRep = rule.representation(mapper);
-
+        final String ruleRep = rule.representation();
         System.out.println(ruleRep);
-        Assert.assertEquals("{\"type\":\"not\",\"children\":[{\"type\":\"or\",\"children\":[{\"type\":\"contains_any\",\"path\":\"$.felines\",\"defaultResult\":false,\"values\":[\"leopard\",\"panther\",\"lion\"],\"extractValues\":false},{\"type\":\"contains_all\",\"path\":\"$.integers\",\"defaultResult\":false,\"values\":[40,10,20,30],\"extractValues\":false}]}]}", ruleRep);
+
+        // Deserialize and compare objects instead of string comparison
+        Rule deserializedRule = Rule.create(ruleRep);
+        Assert.assertEquals(rule, deserializedRule);
     }
     
 

@@ -17,7 +17,7 @@
 
 package io.appform.jsonrules.expressions.preoperation.string;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
@@ -30,6 +30,7 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "sub_str")
 public class SubStringOperation extends PreOperation<String> {
 
     private static final String EMPTY_STRING = "";
@@ -57,17 +58,27 @@ public class SubStringOperation extends PreOperation<String> {
     @Override
     public String compute(ExpressionEvaluationContext context) {
         try {
-            final JsonNode node = context.getNode();
-            if (node.isTextual()) {
-                final String nodeText = node.asText(EMPTY_STRING);
-                if (beginIndex >= 0 && beginIndex < nodeText.length()) {
-                    if (endIndex == -1) {
-                        return nodeText.substring(beginIndex);
-                    } else if (endIndex >= 0 && endIndex >= beginIndex && endIndex <= nodeText.length()) {
-                        return nodeText.substring(beginIndex, endIndex);
-                    }
+            final Object nodeObj = context.getNode();
+            final String nodeText;
+            if (nodeObj instanceof CharSequence) {
+                nodeText = nodeObj.toString();
+            } else if (nodeObj instanceof String) {
+                nodeText = (String) nodeObj;
+            } else {
+                if (suppressExceptions) {
+                    return EMPTY_STRING;
+                }
+                throw new IllegalArgumentException("Sub-String operation is not supported");
+            }
+
+            if (beginIndex >= 0 && beginIndex < nodeText.length()) {
+                if (endIndex == -1) {
+                    return nodeText.substring(beginIndex);
+                } else if (endIndex >= 0 && endIndex >= beginIndex && endIndex <= nodeText.length()) {
+                    return nodeText.substring(beginIndex, endIndex);
                 }
             }
+
             if (suppressExceptions) {
                 return EMPTY_STRING;
             }

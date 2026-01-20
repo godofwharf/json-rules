@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.string;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import com.google.common.base.Strings;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
@@ -25,8 +26,9 @@ import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import lombok.Builder;
 
 /**
- * Check is string is not empty or null
+ * Check if a field is not empty
  */
+@JSONType(typeName = "not_empty")
 public class NotEmptyExpression extends StringJsonPathBasedExpression {
     public NotEmptyExpression() {
         super(ExpressionType.not_empty);
@@ -47,7 +49,7 @@ public class NotEmptyExpression extends StringJsonPathBasedExpression {
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

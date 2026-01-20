@@ -17,14 +17,13 @@
 
 package io.appform.jsonrules.expressions.array;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.jayway.jsonpath.JsonPath;
+import com.alibaba.fastjson2.JSONArray;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.expressions.JsonPathBasedExpression;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.utils.ComparisonUtils;
+import io.appform.jsonrules.utils.JsonPathUtils;
 import io.appform.jsonrules.utils.JsonUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +31,7 @@ import lombok.Singular;
 import lombok.ToString;
 
 import java.util.Set;
+
 
 /**
  * All collection operable expressions
@@ -62,19 +62,17 @@ public abstract class CollectionJsonPathBasedExpression extends JsonPathBasedExp
     }
 
     public void setValues(final Set<Object> values) {
-        this.values = JsonUtils.convertToJsonNode(values);
+        this.values = values;
     }
 
     @Override
-    protected final boolean evaluate(ExpressionEvaluationContext context, String path, JsonNode evaluatedNode) {
+    protected final boolean evaluate(ExpressionEvaluationContext context, String path, Object evaluatedNode) {
         if (extractValues) {
-            JsonNode jsonNode = JsonPath.using(ComparisonUtils.SUPPRESS_EXCEPTION_CONFIG)
-                    .parse(context.getNode())
-                    .read(String.valueOf(valuesPath));
-            if (jsonNode == null || !jsonNode.isArray()) {
+            Object raw = JsonPathUtils.read(ComparisonUtils.SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(valuesPath));
+            if (raw == null || !(raw instanceof JSONArray)) {
                 return false;
             }
-            Set<Object> pathValues = JsonUtils.convertToSet((ArrayNode) jsonNode);
+            Set<Object> pathValues = JsonUtils.convertToSet((JSONArray) raw);
             return evaluate(evaluatedNode, pathValues);
         }
 
@@ -84,6 +82,6 @@ public abstract class CollectionJsonPathBasedExpression extends JsonPathBasedExp
         return evaluate(evaluatedNode, values);
     }
 
-    protected abstract boolean evaluate(JsonNode evaluatedNode, Set<Object> values);
+    protected abstract boolean evaluate(Object evaluatedNode, Set<Object> values);
 
 }

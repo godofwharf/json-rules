@@ -17,12 +17,12 @@
 
 package io.appform.jsonrules.expressions.array;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.utils.ComparisonUtils;
-import io.appform.jsonrules.utils.JsonUtils;
 import lombok.*;
 
 import java.util.Set;
@@ -33,6 +33,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "in")
 public class InExpression extends CollectionJsonPathBasedExpression {
 
     public InExpression() {
@@ -46,17 +47,17 @@ public class InExpression extends CollectionJsonPathBasedExpression {
                         String valuesPath,
                         boolean defaultResult,
                         PreOperation<?> preoperation) {
-        super(ExpressionType.in, path, JsonUtils.convertToJsonNode(values), extractValues, valuesPath, defaultResult, preoperation);
+        super(ExpressionType.in, path, values, extractValues, valuesPath, defaultResult, preoperation);
     }
 
     @Override
-    protected boolean evaluate(JsonNode evaluatedNode, Set<Object> values) {
+    protected boolean evaluate(Object evaluatedNode, Set<Object> values) {
         return !ComparisonUtils.isNodeMissingOrNull(evaluatedNode)
                 && values.stream().anyMatch(value -> ComparisonUtils.compare(evaluatedNode, value) == 0);
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

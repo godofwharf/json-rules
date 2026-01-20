@@ -17,8 +17,9 @@
 
 package io.appform.jsonrules.expressions.array;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
@@ -33,6 +34,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "contains_all")
 public class ContainsAllExpression extends CollectionJsonPathBasedExpression {
 
     public ContainsAllExpression() {
@@ -47,19 +49,19 @@ public class ContainsAllExpression extends CollectionJsonPathBasedExpression {
                                  boolean defaultResult,
                                  PreOperation<?> preoperation) {
         // No pre-operations supported on this expression.
-        super(ExpressionType.contains_all, path, JsonUtils.convertToJsonNode(values), extractValues, valuesPath, defaultResult, null);
+        super(ExpressionType.contains_all, path, values, extractValues, valuesPath, defaultResult, null);
     }
 
     @Override
-    protected boolean evaluate(JsonNode evaluatedNode, Set<Object> values) {
-        if (!evaluatedNode.isArray()) {
+    protected boolean evaluate(Object evaluatedNode, Set<Object> values) {
+        if (!(evaluatedNode instanceof JSONArray)) {
             return false;
         }
-        return JsonUtils.checkAllMatch((ArrayNode) evaluatedNode, values);
+        return JsonUtils.checkAllMatch((JSONArray) evaluatedNode, values);
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

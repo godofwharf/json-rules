@@ -17,7 +17,7 @@
 
 package io.appform.jsonrules.expressions.preoperation.date;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
 import io.appform.jsonrules.utils.PreOperationUtils;
 import lombok.Builder;
@@ -30,6 +30,7 @@ import java.time.OffsetDateTime;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "date_time")
 public class DateTimeOperation extends CalendarOperation {
 
 	protected DateTimeOperation() {
@@ -45,12 +46,19 @@ public class DateTimeOperation extends CalendarOperation {
 	}
 
 	@Override
-	public Number compute(JsonNode evaluatedNode, String operand, String zoneOffset, String pattern) {
+	public Number compute(Object evaluatedNode, String operand, String zoneOffset, String pattern) {
 		try {
-			final OffsetDateTime dateTime = PreOperationUtils.getDateTime(evaluatedNode.asText(), zoneOffset, pattern);
+			String dateTimeString;
+			if (evaluatedNode instanceof String) {
+				dateTimeString = (String) evaluatedNode;
+			} else {
+				throw new IllegalArgumentException("DateTime operation requires a string value");
+			}
+
+			final OffsetDateTime dateTime = PreOperationUtils.getDateTime(dateTimeString, zoneOffset, pattern);
 			return PreOperationUtils.getFromDateTime(dateTime, operand);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Operand doesnot represent a valid date");
+			throw new IllegalArgumentException("Operand does not represent a valid date");
 		}
 	}
 

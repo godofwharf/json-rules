@@ -17,10 +17,9 @@
 
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.MissingNode;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.expressions.array.ContainsAllExpression;
 import io.appform.jsonrules.expressions.array.ContainsAnyExpression;
 import io.appform.jsonrules.expressions.array.InExpression;
@@ -49,34 +48,28 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode
 @ToString
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(name = "equals", value = EqualsExpression.class),
-        @JsonSubTypes.Type(name = "not_equals", value = NotEqualsExpression.class),
-
-        @JsonSubTypes.Type(name = "greater_than", value = GreaterThanExpression.class),
-        @JsonSubTypes.Type(name = "greater_than_equals", value = GreaterThanEqualsExpression.class),
-        @JsonSubTypes.Type(name = "less_than", value = LessThanExpression.class),
-        @JsonSubTypes.Type(name = "less_than_equals", value = LessThanEqualsExpression.class),
-        @JsonSubTypes.Type(name = "between", value = BetweenExpression.class),
-
-        @JsonSubTypes.Type(name = "and", value = AndExpression.class),
-        @JsonSubTypes.Type(name = "or", value = OrExpression.class),
-        @JsonSubTypes.Type(name = "not", value = NotExpression.class),
-
-        @JsonSubTypes.Type(name = "exists", value = ExistsExpression.class),
-        @JsonSubTypes.Type(name = "not_exists", value = NotExistsExpression.class),
-
-        @JsonSubTypes.Type(name = "empty", value = EmptyExpression.class),
-        @JsonSubTypes.Type(name = "not_empty", value = NotEmptyExpression.class),
-        @JsonSubTypes.Type(name = "starts_with", value = StartsWithExpression.class),
-        @JsonSubTypes.Type(name = "ends_with", value = EndsWithExpression.class),
-        @JsonSubTypes.Type(name = "matches", value = MatchesExpression.class),
-
-        @JsonSubTypes.Type(name = "in", value = InExpression.class),
-        @JsonSubTypes.Type(name = "not_in", value = NotInExpression.class),
-        @JsonSubTypes.Type(name = "contains_any", value = ContainsAnyExpression.class),
-        @JsonSubTypes.Type(name = "contains_all", value = ContainsAllExpression.class),
+@JSONType(typeKey = "type", seeAlso = {
+        EqualsExpression.class,
+        NotEqualsExpression.class,
+        GreaterThanExpression.class,
+        GreaterThanEqualsExpression.class,
+        LessThanExpression.class,
+        LessThanEqualsExpression.class,
+        BetweenExpression.class,
+        AndExpression.class,
+        OrExpression.class,
+        NotExpression.class,
+        ExistsExpression.class,
+        NotExistsExpression.class,
+        EmptyExpression.class,
+        NotEmptyExpression.class,
+        StartsWithExpression.class,
+        EndsWithExpression.class,
+        MatchesExpression.class,
+        InExpression.class,
+        NotInExpression.class,
+        ContainsAnyExpression.class,
+        ContainsAllExpression.class
 })
 public abstract class Expression {
     private final ExpressionType type;
@@ -85,14 +78,18 @@ public abstract class Expression {
         this.type = type;
     }
 
-    public boolean evaluate(JsonNode node) {
+    public boolean evaluate(JSONObject node) {
+        return evaluate((Object) node, Collections.emptyMap());
+    }
+
+    public boolean evaluate(Object node) {
         return evaluate(node, Collections.emptyMap());
     }
 
-    public boolean evaluate(JsonNode node, Map<OptionKeys, Object> options) {
+    public boolean evaluate(Object node, Map<OptionKeys, Object> options) {
         if (null == node) {
-            // Fail safe check, to replace null with missing node.
-            node = MissingNode.getInstance();
+            // Fail safe check, to replace null with empty node.
+            node = new JSONObject();
         }
         return evaluate(ExpressionEvaluationContext.builder()
                 .node(node)
@@ -100,15 +97,21 @@ public abstract class Expression {
                 .build());
     }
 
-    public FailureDetail debug(JsonNode node) {
+    public FailureDetail debug(JSONObject node) {
+        return debug((Object) node);
+    }
+
+    public FailureDetail debug(Object node) {
+        // ExpressionDebugger now operates on fastjson2 JSONObject payloads.
+        final JSONObject jsonObject = node instanceof JSONObject ? (JSONObject) node : JSON.parseObject(JSON.toJSONString(node));
         return ExpressionDebugger.builder()
                 .expression(this)
-                .node(node)
+                .node(jsonObject)
                 .build()
                 .debug();
     }
 
     public abstract boolean evaluate(ExpressionEvaluationContext context);
 
-    public abstract <T> T accept(ExpressionVisitor<T> visitor, JsonNode node);
+    public abstract <T> T accept(ExpressionVisitor<T> visitor, JSONObject node);
 }

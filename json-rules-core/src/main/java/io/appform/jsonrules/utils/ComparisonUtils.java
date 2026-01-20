@@ -17,131 +17,166 @@
 
 package io.appform.jsonrules.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Option;
 import io.appform.jsonrules.ExpressionEvaluationContext;
-import io.appform.jsonrules.config.JacksonConfiguration;
+import io.appform.jsonrules.config.EvaluationConfiguration;
 
 /**
  * Created by santanu on 15/9/16.
  */
 public class ComparisonUtils {
-    public static final Configuration SUPPRESS_EXCEPTION_CONFIG = JacksonConfiguration.getInstance().getConfiguration()
+    public static final Configuration SUPPRESS_EXCEPTION_CONFIG = EvaluationConfiguration.getInstance().getConfiguration()
             .addOptions(Option.SUPPRESS_EXCEPTIONS);
-    public static final ObjectMapper mapper = JacksonConfiguration.getInstance().getObjectMapper();
 
-    public static int compare(JsonNode evaluatedNode, Object value) {
+    public static int compare(Object evaluatedNode, Object value) {
         int comparisonResult = 0;
-        if (evaluatedNode.isNumber()) {
-            if (value instanceof NumericNode) {
-                return compare(evaluatedNode, ((NumericNode) value).numberValue());
+        if (isNumber(evaluatedNode)) {
+            if (isNumber(value)) {
+                return compare(evaluatedNode, asNumber(value));
             }
             return compare(evaluatedNode, (Number) value);
-        } else if (evaluatedNode.isBoolean()) {
-            if (value instanceof BooleanNode) {
-                return compare(evaluatedNode, ((BooleanNode) value).booleanValue());
+        } else if (isBoolean(evaluatedNode)) {
+            if (isBoolean(value)) {
+                return compare(evaluatedNode, asBoolean(value));
             }
             return compare(evaluatedNode, Boolean.parseBoolean(value.toString()));
-        } else if (evaluatedNode.isTextual()) {
-            if (value instanceof TextNode) {
-                return compare(evaluatedNode, ((TextNode) value).asText());
+        } else if (isString(evaluatedNode)) {
+            if (isString(value)) {
+                return compare(evaluatedNode, asString(value));
             }
             return compare(evaluatedNode, String.valueOf(value));
-        } else if (evaluatedNode.isObject()) {
+        } else if (evaluatedNode instanceof JSONObject) {
             throw new IllegalArgumentException("Object comparisons not supported");
         }
         return comparisonResult;
     }
 
-    public static int compare(JsonNode evaluatedNode, Number value) {
+    public static int compare(Object evaluatedNode, Number value) {
         int comparisonResult = 0;
-        if (evaluatedNode.isNumber()) {
-            if (evaluatedNode.isIntegralNumber()) {
-                comparisonResult = Long.compare(evaluatedNode.asLong(), value.longValue());
-            } else if (evaluatedNode.isFloatingPointNumber()) {
-                comparisonResult = Double.compare(evaluatedNode.asDouble(), value.doubleValue());
+        if (isNumber(evaluatedNode)) {
+            Number nodeValue = asNumber(evaluatedNode);
+            if (isIntegralNumber(evaluatedNode)) {
+                comparisonResult = Long.compare(nodeValue.longValue(), value.longValue());
+            } else {
+                comparisonResult = Double.compare(nodeValue.doubleValue(), value.doubleValue());
             }
         }
         return comparisonResult;
     }
 
-    public static int compare(JsonNode evaluatedNode, Boolean value) {
+    public static int compare(Object evaluatedNode, Boolean value) {
         int comparisonResult = 0;
-        if (evaluatedNode.isBoolean()) {
+        if (isBoolean(evaluatedNode)) {
             final boolean bValue = Boolean.parseBoolean(value.toString());
-            comparisonResult = Boolean.compare(evaluatedNode.asBoolean(), bValue);
+            comparisonResult = Boolean.compare(asBoolean(evaluatedNode), bValue);
         }
         return comparisonResult;
     }
 
-    public static int compare(JsonNode evaluatedNode, String value) {
+    public static int compare(Object evaluatedNode, String value) {
         int comparisonResult = -1;
-        if (evaluatedNode.isTextual()) {
-            comparisonResult = evaluatedNode.asText().compareTo(value);
+        if (isString(evaluatedNode)) {
+            comparisonResult = asString(evaluatedNode).compareTo(value);
         }
         return comparisonResult;
     }
 
     public static boolean compareForEquality(ExpressionEvaluationContext context,
-                                             JsonNode evaluatedNode,
+                                             Object evaluatedNode,
                                              Object value) {
         final boolean nodeMissingOrNullCheck = isNodeMissingOrNull(evaluatedNode);
-        if (!(value instanceof JsonNode)) {
-            value = JsonPathUtils.read(SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(value));
-        }
-        JsonNode jsonNode = (JsonNode) value;
 
-        if (isNodeMissingOrNull(jsonNode)) {
+        // If value is a JSON path, extract it
+        if (!(isJSONType(value))) {
+            Object raw = JsonPathUtils.read(SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(value));
+            value = raw;
+        }
+
+        if (isNodeMissingOrNull(value)) {
             return nodeMissingOrNullCheck;
-        } else if (jsonNode.isNumber()) {
-            if (jsonNode.isIntegralNumber()) {
-                return !nodeMissingOrNullCheck && compare(evaluatedNode, jsonNode.asLong()) == 0;
+        } else if (isNumber(value)) {
+            if (isIntegralNumber(value)) {
+                return !nodeMissingOrNullCheck && compare(evaluatedNode, asNumber(value).longValue()) == 0;
             } else {
-                return !nodeMissingOrNullCheck && compare(evaluatedNode, jsonNode.asDouble()) == 0;
+                return !nodeMissingOrNullCheck && compare(evaluatedNode, asNumber(value).doubleValue()) == 0;
             }
-        } else if (jsonNode.isBoolean()) {
+        } else if (isBoolean(value)) {
             return !nodeMissingOrNullCheck
-                    && ComparisonUtils.compare(evaluatedNode, jsonNode.asBoolean()) == 0;
-        } else if (jsonNode.isTextual()) {
-            return !nodeMissingOrNullCheck && compare(evaluatedNode, jsonNode.asText()) == 0;
+                    && ComparisonUtils.compare(evaluatedNode, asBoolean(value)) == 0;
+        } else if (isString(value)) {
+            return !nodeMissingOrNullCheck && compare(evaluatedNode, asString(value)) == 0;
         } else {
-            return !nodeMissingOrNullCheck && compare(evaluatedNode, jsonNode) == 0;
+            return !nodeMissingOrNullCheck && compare(evaluatedNode, value) == 0;
         }
     }
 
     public static boolean compareForNotEquals(ExpressionEvaluationContext context,
-                                              JsonNode evaluatedNode,
+                                              Object evaluatedNode,
                                               Object value) {
         final boolean nodeMissingOrNullCheck = isNodeMissingOrNull(evaluatedNode);
-        if (!(value instanceof JsonNode)) {
-            value = JsonPathUtils.read(SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(value));
-        }
-        JsonNode jsonNode = (JsonNode) value;
 
-        if (isNodeMissingOrNull(jsonNode)) {
+        // If value is a JSON path, extract it
+        if (!(isJSONType(value))) {
+            Object raw = JsonPathUtils.read(SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(value));
+            value = raw;
+        }
+
+        if (isNodeMissingOrNull(value)) {
             return !nodeMissingOrNullCheck;
-        } else if (jsonNode.isNumber()) {
-            if (jsonNode.isIntegralNumber()) {
-                return nodeMissingOrNullCheck || compare(evaluatedNode, jsonNode.asLong()) != 0;
+        } else if (isNumber(value)) {
+            if (isIntegralNumber(value)) {
+                return nodeMissingOrNullCheck || compare(evaluatedNode, asNumber(value).longValue()) != 0;
             } else {
-                return nodeMissingOrNullCheck || compare(evaluatedNode, jsonNode.asDouble()) != 0;
+                return nodeMissingOrNullCheck || compare(evaluatedNode, asNumber(value).doubleValue()) != 0;
             }
-        } else if (jsonNode.isBoolean()) {
-            return nodeMissingOrNullCheck || compare(evaluatedNode, jsonNode.asBoolean()) != 0;
-        } else if (jsonNode.isTextual()) {
-            return nodeMissingOrNullCheck || compare(evaluatedNode, jsonNode.asText()) != 0;
+        } else if (isBoolean(value)) {
+            return nodeMissingOrNullCheck || compare(evaluatedNode, asBoolean(value)) != 0;
+        } else if (isString(value)) {
+            return nodeMissingOrNullCheck || compare(evaluatedNode, asString(value)) != 0;
         } else {
-            return nodeMissingOrNullCheck || compare(evaluatedNode, jsonNode) != 0;
+            return nodeMissingOrNullCheck || compare(evaluatedNode, value) != 0;
         }
     }
 
-    public static boolean isNodeMissingOrNull(JsonNode node) {
-        return null == node || node.isMissingNode() || node.isNull();
+    public static boolean isNodeMissingOrNull(Object node) {
+        return null == node;
+    }
+
+    // Helper methods for type checking and conversion
+    private static boolean isJSONType(Object value) {
+        return value instanceof JSONObject || value instanceof JSONArray;
+    }
+
+    private static boolean isNumber(Object value) {
+        return value instanceof Number;
+    }
+
+    private static boolean isIntegralNumber(Object value) {
+        return value instanceof Integer || value instanceof Long ||
+               value instanceof Short || value instanceof Byte;
+    }
+
+    private static boolean isBoolean(Object value) {
+        return value instanceof Boolean;
+    }
+
+    private static boolean isString(Object value) {
+        return value instanceof String;
+    }
+
+    private static Number asNumber(Object value) {
+        return (Number) value;
+    }
+
+    private static Boolean asBoolean(Object value) {
+        return (Boolean) value;
+    }
+
+    private static String asString(Object value) {
+        return (String) value;
     }
 
     public static boolean getDefaultResult(Boolean defaultResult, boolean resultIfNull) {

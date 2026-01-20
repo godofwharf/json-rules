@@ -17,7 +17,6 @@
 
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +30,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 public class ExpressionEvaluationContext {
-    private JsonNode node;
+    private Object node;
     private Map<OptionKeys, Object> options;
 }

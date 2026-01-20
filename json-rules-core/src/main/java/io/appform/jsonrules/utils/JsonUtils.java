@@ -1,10 +1,7 @@
 package io.appform.jsonrules.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import io.appform.jsonrules.config.JacksonConfiguration;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.experimental.UtilityClass;
 
 import java.util.HashSet;
@@ -14,46 +11,34 @@ import java.util.Set;
 @UtilityClass
 public class JsonUtils {
 
-    public static Set<Object> convertToJsonNode(Set<Object> values) {
-        if (values.stream().allMatch(value -> value instanceof JsonNode)) {
-            return values;
-        }
-        ObjectMapper mapper = JacksonConfiguration.getInstance().getObjectMapper();
-        Set<Object> valuesAsJsonNodes = new LinkedHashSet<>();
-        values.forEach(value -> valuesAsJsonNodes.add(mapper.valueToTree(value)));
-        return valuesAsJsonNodes;
-    }
-
     public static String convertToString(Object obj) {
         if (obj == null) {
             return "null";
         }
-        if (obj instanceof TextNode) {
-            return ((TextNode) obj).asText();
+        if (obj instanceof String) {
+            return (String) obj;
         }
         return obj.toString();
     }
 
-    public static Set<Object> convertToSet(final ArrayNode arrayNode) {
-        Set<Object> result = new HashSet<>();
-        arrayNode.forEach(result::add);
-        return result;
+    public static Set<Object> convertToSet(final JSONArray arrayNode) {
+        return new HashSet<>(arrayNode);
     }
 
-    public static boolean checkAllMatch(final ArrayNode arrayNode,
+    public static boolean checkAllMatch(final JSONArray arrayNode,
                                         final Set<Object> values) {
-        for (JsonNode elementNode: arrayNode) {
-            if (!values.contains(elementNode)) {
+        for (Object element : arrayNode) {
+            if (!values.contains(element)) {
                 return false;
             }
         }
         return true;
     }
 
-    public static boolean checkAnyMatch(final ArrayNode arrayNode,
+    public static boolean checkAnyMatch(final JSONArray arrayNode,
                                         final Set<Object> values) {
-        for (JsonNode elementNode: arrayNode) {
-            if (values.contains(elementNode)) {
+        for (Object element : arrayNode) {
+            if (values.contains(element)) {
                 return true;
             }
         }

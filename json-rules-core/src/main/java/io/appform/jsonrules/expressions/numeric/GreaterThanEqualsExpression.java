@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.numeric;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
@@ -27,6 +28,7 @@ import lombok.Builder;
 /**
  * Created by santanu on 15/9/16.
  */
+@JSONType(typeName = "greater_than_equals")
 public class GreaterThanEqualsExpression extends NumericJsonPathBasedExpression {
     public GreaterThanEqualsExpression() {
         super(ExpressionType.greater_than_equals);
@@ -49,7 +51,7 @@ public class GreaterThanEqualsExpression extends NumericJsonPathBasedExpression 
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

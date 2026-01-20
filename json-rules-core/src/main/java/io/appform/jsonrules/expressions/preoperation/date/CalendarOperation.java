@@ -17,7 +17,6 @@
 
 package io.appform.jsonrules.expressions.preoperation.date;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
@@ -50,8 +49,8 @@ public abstract class CalendarOperation extends PreOperation<Number> {
 		this.pattern = pattern;
 	}
 
-	public Number compute(JsonNode evaluatedNode) {
-		if (operand != null && (evaluatedNode.isNumber() || evaluatedNode.isTextual())) {
+	public Number compute(Object evaluatedNode) {
+		if (operand != null && (evaluatedNode instanceof Number || evaluatedNode instanceof String)) {
 			return compute(evaluatedNode, operand, zoneOffSet, pattern);
 		}
 		else {
@@ -61,9 +60,10 @@ public abstract class CalendarOperation extends PreOperation<Number> {
 
 	@Override
 	public Number compute(ExpressionEvaluationContext context) {
-		JsonNode node = context.getNode();
+		Object node = context.getNode();
 		return compute(node);
 	}
-	protected abstract Number compute(JsonNode evaluatedNode, String operand, String zoneOffSet, String pattern);
+
+	protected abstract Number compute(Object evaluatedNode, String operand, String zoneOffSet, String pattern);
 
 }

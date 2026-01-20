@@ -17,12 +17,12 @@
 
 package io.appform.jsonrules.expressions.array;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.utils.ComparisonUtils;
-import io.appform.jsonrules.utils.JsonUtils;
 import lombok.*;
 
 import java.util.Set;
@@ -33,6 +33,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "not_in")
 public class NotInExpression extends CollectionJsonPathBasedExpression {
     public NotInExpression() {
         super(ExpressionType.not_in);
@@ -46,18 +47,18 @@ public class NotInExpression extends CollectionJsonPathBasedExpression {
                            String valuesPath,
                            Boolean defaultResult,
                            PreOperation<?> preoperation) {
-        super(ExpressionType.not_in, path, JsonUtils.convertToJsonNode(values), extractValues, valuesPath,
+        super(ExpressionType.not_in, path, values, extractValues, valuesPath,
                 ComparisonUtils.getDefaultResult(defaultResult, true), preoperation);
     }
 
     @Override
-    protected boolean evaluate(JsonNode evaluatedNode, Set<Object> values) {
+    protected boolean evaluate(Object evaluatedNode, Set<Object> values) {
         return (ComparisonUtils.isNodeMissingOrNull(evaluatedNode)
                 || values.stream().allMatch(value -> ComparisonUtils.compare(evaluatedNode, value) != 0));
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

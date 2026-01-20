@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.equality;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
@@ -35,6 +36,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "not_equals")
 public class NotEqualsExpression extends JsonPathBasedExpression {
     private Object value;
     private boolean extractValueFromPath;
@@ -53,7 +55,7 @@ public class NotEqualsExpression extends JsonPathBasedExpression {
     }
 
     @Override
-    protected boolean evaluate(ExpressionEvaluationContext context, String path, JsonNode evaluatedNode) {
+    protected boolean evaluate(ExpressionEvaluationContext context, String path, Object evaluatedNode) {
         if (extractValueFromPath) {
             return ComparisonUtils.compareForNotEquals(context, evaluatedNode, value);
         }
@@ -62,7 +64,7 @@ public class NotEqualsExpression extends JsonPathBasedExpression {
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

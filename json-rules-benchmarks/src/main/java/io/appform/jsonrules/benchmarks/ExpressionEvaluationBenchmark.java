@@ -1,13 +1,15 @@
 package io.appform.jsonrules.benchmarks;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.config.JsonRulesConfiguration;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 @Threads(value = 5)
@@ -24,12 +26,14 @@ public class ExpressionEvaluationBenchmark {
 
         public State() {
             try {
-                ObjectMapper mapper = new ObjectMapper();
-                expression = mapper.readValue(
-                        ExpressionEvaluationBenchmark.class.getResourceAsStream("/expression.json"),
-                        Expression.class);
-                JsonNode jsonNode = mapper.readTree(
-                        ExpressionEvaluationBenchmark.class.getResourceAsStream("/collection.json"));
+                // Load expression using fastjson2
+                String expressionJson = readResourceAsString("/expression.json");
+                expression = JSON.parseObject(expressionJson, Expression.class);
+
+                // Load collection data using fastjson2
+                String collectionJson = readResourceAsString("/collection.json");
+                JSONObject jsonNode = JSON.parseObject(collectionJson);
+
                 context = ExpressionEvaluationContext.builder()
                         .node(jsonNode)
                         .options(new HashMap<>())
@@ -37,6 +41,15 @@ public class ExpressionEvaluationBenchmark {
                 JsonRulesConfiguration.configure(JsonRulesConfiguration.PerformanceSafetyPreference.SPEED);
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            }
+        }
+
+        private String readResourceAsString(String resourcePath) throws Exception {
+            try (InputStream is = ExpressionEvaluationBenchmark.class.getResourceAsStream(resourcePath)) {
+                if (is == null) {
+                    throw new IllegalArgumentException("Resource not found: " + resourcePath);
+                }
+                return new String(is.readAllBytes(), StandardCharsets.UTF_8);
             }
         }
     }

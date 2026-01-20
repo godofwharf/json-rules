@@ -17,7 +17,7 @@
 
 package io.appform.jsonrules.expressions.debug;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
 import com.jayway.jsonpath.PathNotFoundException;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionType;
@@ -53,14 +53,14 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
             .failed(false)
             .build();
     private final Expression expression;
-    private final JsonNode node;
+    private final JSONObject node;
 
     public FailureDetail debug() {
         return expression.accept(this, node);
     }
 
     @Override
-    public FailureDetail visit(AndExpression expression, JsonNode node) {
+    public FailureDetail visit(AndExpression expression, JSONObject node) {
         final List<FailureDetail> details = evaluteChildren(expression.getChildren(), node);
         if (details.isEmpty()) {
             return DEFAULT_SUCCESS_RESPONSE;
@@ -69,27 +69,25 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(OrExpression expression, JsonNode node) {
+    public FailureDetail visit(OrExpression expression, JSONObject node) {
         final List<FailureDetail> details = evaluteChildren(expression.getChildren(), node);
-        if (details.size() < expression.getChildren()
-                .size()) {
+        if (details.size() < expression.getChildren().size()) {
             return DEFAULT_SUCCESS_RESPONSE;
         }
         return generateDetails(expression.getType(), details);
     }
 
     @Override
-    public FailureDetail visit(NotExpression expression, JsonNode node) {
+    public FailureDetail visit(NotExpression expression, JSONObject node) {
         final List<FailureDetail> details = evaluteChildren(expression.getChildren(), node);
-        if (details.size() == expression.getChildren()
-                .size()) {
+        if (details.size() == expression.getChildren().size()) {
             return DEFAULT_SUCCESS_RESPONSE;
         }
         return generateDetails(expression.getType(), details);
     }
 
     @Override
-    public FailureDetail visit(ExistsExpression expression, JsonNode node) {
+    public FailureDetail visit(ExistsExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -99,7 +97,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(NotExistsExpression expression, JsonNode node) {
+    public FailureDetail visit(NotExistsExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -109,7 +107,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(GreaterThanExpression expression, JsonNode node) {
+    public FailureDetail visit(GreaterThanExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -122,7 +120,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(GreaterThanEqualsExpression expression, JsonNode node) {
+    public FailureDetail visit(GreaterThanEqualsExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -135,7 +133,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(LessThanExpression expression, JsonNode node) {
+    public FailureDetail visit(LessThanExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -148,7 +146,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(LessThanEqualsExpression expression, JsonNode node) {
+    public FailureDetail visit(LessThanEqualsExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -161,7 +159,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(EqualsExpression expression, JsonNode node) {
+    public FailureDetail visit(EqualsExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -174,7 +172,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(NotEqualsExpression expression, JsonNode node) {
+    public FailureDetail visit(NotEqualsExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -187,7 +185,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(EmptyExpression expression, JsonNode node) {
+    public FailureDetail visit(EmptyExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -197,7 +195,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(NotEmptyExpression expression, JsonNode node) {
+    public FailureDetail visit(NotEmptyExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -207,7 +205,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(StartsWithExpression expression, JsonNode node) {
+    public FailureDetail visit(StartsWithExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -220,7 +218,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(EndsWithExpression expression, JsonNode node) {
+    public FailureDetail visit(EndsWithExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -233,7 +231,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(MatchesExpression expression, JsonNode node) {
+    public FailureDetail visit(MatchesExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -246,7 +244,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(InExpression expression, JsonNode node) {
+    public FailureDetail visit(InExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -256,7 +254,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(NotInExpression expression, JsonNode node) {
+    public FailureDetail visit(NotInExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -266,7 +264,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(ContainsAnyExpression expression, JsonNode node) {
+    public FailureDetail visit(ContainsAnyExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -276,7 +274,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(ContainsAllExpression expression, JsonNode node) {
+    public FailureDetail visit(ContainsAllExpression expression, JSONObject node) {
         final val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -286,7 +284,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
     }
 
     @Override
-    public FailureDetail visit(BetweenExpression expression, JsonNode node) {
+    public FailureDetail visit(BetweenExpression expression, JSONObject node) {
         val value = fetchValue(node, expression.getPath());
         return generateDetails(expression.getType(),
                 expression.getPath(),
@@ -299,7 +297,7 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
                         expression.getUpperBound()));
     }
 
-    private List<FailureDetail> evaluteChildren(List<Expression> expressions, JsonNode node) {
+    private List<FailureDetail> evaluteChildren(List<Expression> expressions, JSONObject node) {
         return expressions.stream()
                 .map(e -> e.accept(this, node))
                 .filter(FailureDetail::isFailed)
@@ -334,10 +332,10 @@ public class ExpressionDebugger implements ExpressionVisitor<FailureDetail> {
                 .build();
     }
 
-    private Object fetchValue(JsonNode jsonNode, String path) {
+    private Object fetchValue(JSONObject jsonNode, String path) {
         if (jsonNode != null && path != null) {
             try {
-                return JsonPathUtils.read(jsonNode, path);
+                return JsonPathUtils.read((Object) jsonNode, path);
             } catch (PathNotFoundException e) {
                 // ignore
             }

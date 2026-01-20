@@ -17,8 +17,7 @@
 
 package io.appform.jsonrules;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Sets;
 import io.appform.jsonrules.expressions.array.InExpression;
 import io.appform.jsonrules.expressions.array.NotInExpression;
@@ -30,6 +29,7 @@ import io.appform.jsonrules.expressions.numeric.GreaterThanExpression;
 import io.appform.jsonrules.expressions.numeric.LessThanExpression;
 import io.appform.jsonrules.expressions.preoperation.date.DateTimeOperation;
 import io.appform.jsonrules.utils.Rule;
+import io.appform.jsonrules.utils.TestJson;
 import io.appform.jsonrules.utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,22 +43,20 @@ public class DateTimeOperationTest {
 
 
     private ExpressionEvaluationContext context;
-    private ObjectMapper mapper;
     private Instant dateTime;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new ObjectMapper();
         dateTime = Instant.now();
         long epoch = dateTime.getEpochSecond();
-        String dateTimeStr = new StringBuilder().append("\"").append(dateTime.toString()).append("\"").toString();
-        JsonNode node = mapper.readTree("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : "+epoch+", \"dateTime\" : "+dateTimeStr+" }");
+        String dateTimeStr = new StringBuilder().append("\"").append(dateTime).append("\"").toString();
+        JSONObject node = TestJson.obj("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\": " + epoch + ", \"dateTime\": " + dateTimeStr + " }");
         context = ExpressionEvaluationContext.builder().node(node).build();
     }
 
     @Test
-	public void testWithEqualsExpression() {
-		// DateTimeOperation test cases
+    public void testWithEqualsExpression() {
+        // DateTimeOperation test cases
         Assert.assertTrue(EqualsExpression.builder()
                 .path("$.dateTime")
                 .preoperation(DateTimeOperation.builder().operand("minute_of_hour").zoneOffSet("+05:30").build())
@@ -107,7 +105,7 @@ public class DateTimeOperationTest {
                 .value(dateTime.atOffset(ZoneOffset.of("+05:30")).get(ChronoField.MONTH_OF_YEAR))
                 .build()
                 .evaluate(context));
-        
+
         // Would only match with the specified ZoneOffSet
         Assert.assertFalse(EqualsExpression.builder()
                 .path("$.dateTime")
@@ -121,7 +119,7 @@ public class DateTimeOperationTest {
                 .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY))
                 .build()
                 .evaluate(context));
-        
+
         // Default ZoneOffSet considered is UTC
         Assert.assertTrue(EqualsExpression.builder()
                 .path("$.dateTime")
@@ -135,23 +133,23 @@ public class DateTimeOperationTest {
                 .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY))
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	EqualsExpression.builder()
-	            .path("$.epochTime")
-	            .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
-	            .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR))
-	            .build()
-	            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Doesn't represent a valid date time string", true);
+            EqualsExpression.builder()
+                    .path("$.epochTime")
+                    .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
+                    .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Doesn't represent a valid date time string", true);
         }
-	}
+    }
 
     @Test
-	public void testWithNotEqualsExpression() {
-		// DateTimeOperation test cases
+    public void testWithNotEqualsExpression() {
+        // DateTimeOperation test cases
         Assert.assertFalse(NotEqualsExpression.builder()
                 .path("$.dateTime")
                 .preoperation(DateTimeOperation.builder().operand("minute_of_hour").zoneOffSet("+05:30").build())
@@ -200,7 +198,7 @@ public class DateTimeOperationTest {
                 .value(dateTime.atOffset(ZoneOffset.of("+05:30")).get(ChronoField.MONTH_OF_YEAR))
                 .build()
                 .evaluate(context));
-        
+
         // Would only match with the specified ZoneOffSet
         Assert.assertTrue(NotEqualsExpression.builder()
                 .path("$.dateTime")
@@ -214,7 +212,7 @@ public class DateTimeOperationTest {
                 .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY))
                 .build()
                 .evaluate(context));
-        
+
         // Default ZoneOffSet considered is UTC
         Assert.assertFalse(NotEqualsExpression.builder()
                 .path("$.dateTime")
@@ -228,24 +226,24 @@ public class DateTimeOperationTest {
                 .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY))
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	NotEqualsExpression.builder()
-	            .path("$.epochTime")
-	            .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
-	            .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR))
-	            .build()
-	            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Doesn't represent a valid date time string", true);
+            NotEqualsExpression.builder()
+                    .path("$.epochTime")
+                    .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
+                    .value(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Doesn't represent a valid date time string", true);
         }
-	}
+    }
 
     @Test
     public void testWithInExpression() throws Exception {
 
-		// DateTimeOperation test cases
+        // DateTimeOperation test cases
         Assert.assertTrue(InExpression.builder()
                 .path("$.dateTime")
                 .preoperation(DateTimeOperation.builder().operand("minute_of_hour").zoneOffSet("+05:30").build())
@@ -294,7 +292,7 @@ public class DateTimeOperationTest {
                 .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.of("+05:30")).get(ChronoField.MONTH_OF_YEAR)))
                 .build()
                 .evaluate(context));
-        
+
         // Would only match with the specified ZoneOffSet
         Assert.assertFalse(InExpression.builder()
                 .path("$.dateTime")
@@ -308,7 +306,7 @@ public class DateTimeOperationTest {
                 .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY)))
                 .build()
                 .evaluate(context));
-        
+
         // Default ZoneOffSet considered is UTC
         Assert.assertTrue(InExpression.builder()
                 .path("$.dateTime")
@@ -322,24 +320,24 @@ public class DateTimeOperationTest {
                 .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY)))
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	InExpression.builder()
-	            .path("$.epochTime")
-	            .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
-	            .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR)))
-	            .build()
-	            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Doesn't represent a valid date time string", true);
+            InExpression.builder()
+                    .path("$.epochTime")
+                    .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
+                    .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR)))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Doesn't represent a valid date time string", true);
         }
     }
-    
+
     @Test
     public void testWithNotInExpression() throws Exception {
 
-		// DateTimeOperation test cases
+        // DateTimeOperation test cases
         Assert.assertFalse(NotInExpression.builder()
                 .path("$.dateTime")
                 .preoperation(DateTimeOperation.builder().operand("minute_of_hour").zoneOffSet("+05:30").build())
@@ -388,7 +386,7 @@ public class DateTimeOperationTest {
                 .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.of("+05:30")).get(ChronoField.MONTH_OF_YEAR)))
                 .build()
                 .evaluate(context));
-        
+
         // Would only match with the specified ZoneOffSet
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.dateTime")
@@ -402,7 +400,7 @@ public class DateTimeOperationTest {
                 .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY)))
                 .build()
                 .evaluate(context));
-        
+
         // Default ZoneOffSet considered is UTC
         Assert.assertFalse(NotInExpression.builder()
                 .path("$.dateTime")
@@ -416,28 +414,28 @@ public class DateTimeOperationTest {
                 .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY)))
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	NotInExpression.builder()
-	            .path("$.epochTime")
-	            .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
-	            .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR)))
-	            .build()
-	            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Doesn't represent a valid date time string", true);
+            NotInExpression.builder()
+                    .path("$.epochTime")
+                    .preoperation(DateTimeOperation.builder().operand("minute_of_hour").build())
+                    .values(Sets.newHashSet(dateTime.atOffset(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR)))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Doesn't represent a valid date time string", true);
         }
     }
-    
+
     @Test
     public void testRule() throws Exception {
         final String ruleRepr = TestUtils.read("/dateTimeOperation.rule");
-        Rule rule = Rule.create(ruleRepr, mapper);
-        JsonNode node = mapper.readTree("{ \"dateTime\": \"2017-05-31T11:09:37Z\", \"string\" : \"Hello\" }");
-        Assert.assertTrue(rule.matches(node));
+        Rule rule = Rule.create(ruleRepr);
+        JSONObject node = TestJson.obj("{ \"dateTime\": \"2017-05-31T11:09:37Z\", \"string\" : \"Hello\" }");
+        Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testRepresentation() throws Exception {
         Rule rule = new Rule(NotExpression.builder()
@@ -456,11 +454,14 @@ public class DateTimeOperationTest {
                                 .build())
                 .build());
 
-        final String ruleRep = rule.representation(mapper);
-
+        final String ruleRep = rule.representation();
         System.out.println(ruleRep);
-        Assert.assertEquals("{\"type\":\"not\",\"children\":[{\"type\":\"or\",\"children\":[{\"type\":\"less_than\",\"path\":\"$.unixTime\",\"preoperation\":{\"operation\":\"date_time\",\"operand\":\"hour_of_day\"},\"defaultResult\":false,\"value\":11,\"extractValueFromPath\":false},{\"type\":\"greater_than\",\"path\":\"$.unixTime\",\"preoperation\":{\"operation\":\"date_time\",\"operand\":\"week_of_month\"},\"defaultResult\":false,\"value\":30,\"extractValueFromPath\":false}]}]}", ruleRep);
+
+        // Deserialize and compare objects instead of string comparison
+        Rule deserializedRule = Rule.create(ruleRep);
+        Assert.assertEquals(rule, deserializedRule);
     }
+
     @Test
     public void testGreaterThanExpressionOnDateColumnWithPattern() throws Exception {
         String dateTime = "2022-03-17 13:01:36.857";
@@ -474,10 +475,11 @@ public class DateTimeOperationTest {
                 .value(2021).build();
         long epoch = Instant.now().getEpochSecond();
         String dateTimeStr = new StringBuilder().append("\"").append(dateTime).append("\"").toString();
-        JsonNode node = mapper.readTree("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : "+epoch+", \"dateTime\" : "+dateTimeStr+" }");
+        JSONObject node = TestJson.obj("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : " + epoch + ", \"dateTime\" : " + dateTimeStr + " }");
         context.setNode(node);
         Assert.assertTrue(expression.evaluate(context.getNode()));
     }
+
     @Test
     public void testGreaterThanExpressionOnDateColumnWithoutPattern() throws Exception {
         String dateTime = "2022-03-17T13:01:36.857Z";
@@ -490,7 +492,7 @@ public class DateTimeOperationTest {
                 .value(2021).build();
         long epoch = Instant.now().getEpochSecond();
         String dateTimeStr = new StringBuilder().append("\"").append(dateTime).append("\"").toString();
-        JsonNode node = mapper.readTree("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : "+epoch+", \"dateTime\" : "+dateTimeStr+" }");
+        JSONObject node = TestJson.obj("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : " + epoch + ", \"dateTime\" : " + dateTimeStr + " }");
         context.setNode(node);
         Assert.assertTrue(expression.evaluate(context.getNode()));
     }

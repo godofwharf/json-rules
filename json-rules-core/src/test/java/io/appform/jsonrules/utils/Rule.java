@@ -17,17 +17,20 @@
 
 package io.appform.jsonrules.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONReader;
+import com.alibaba.fastjson2.JSONWriter;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionEvaluationContext;
+import lombok.EqualsAndHashCode;
 
 import java.util.Collections;
 
 /**
  * A basic rule
  */
+@EqualsAndHashCode
 public class Rule {
     private final Expression expression;
 
@@ -35,11 +38,13 @@ public class Rule {
         this.expression = expression;
     }
 
-    public static Rule create(final String json, final ObjectMapper mapper) throws Exception {
-        return new Rule(mapper.readValue(json, Expression.class));
+    public static Rule create(final String json) throws Exception {
+        Expression expression = JSON.parseObject(json, Expression.class,
+                JSONReader.Feature.UseDoubleForDecimals);
+        return new Rule(expression);
     }
 
-    public boolean matches(JsonNode node) {
+    public boolean matches(Object node) {
         return expression.evaluate(
                 ExpressionEvaluationContext.builder()
                         .node(node)
@@ -47,9 +52,11 @@ public class Rule {
                         .build());
     }
 
-    public String representation(ObjectMapper mapper) throws Exception {
-    	mapper.setSerializationInclusion(Include.NON_NULL);
-    	mapper.setSerializationInclusion(Include.NON_EMPTY);
-        return mapper.writeValueAsString(expression);
+    public boolean matches(JSONObject node) {
+        return matches((Object) node);
+    }
+
+    public String representation() throws Exception {
+        return JSON.toJSONString(expression, JSONWriter.Feature.IgnoreEmpty);
     }
 }

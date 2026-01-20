@@ -17,8 +17,7 @@
 
 package io.appform.jsonrules.expressions.preoperation;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.expressions.preoperation.array.SizeOperation;
 import io.appform.jsonrules.expressions.preoperation.date.DateTimeOperation;
@@ -37,25 +36,25 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode
 @ToString
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "operation")
-@JsonSubTypes({
-        @JsonSubTypes.Type(name = "add", value = AddOperation.class),
-        @JsonSubTypes.Type(name = "subtract", value = SubtractOperation.class),
-        @JsonSubTypes.Type(name = "multiply", value = MultiplyOperation.class),
-        @JsonSubTypes.Type(name = "divide", value = DivideOperation.class),
-        @JsonSubTypes.Type(name = "modulo", value = ModuloOperation.class),
-
-        @JsonSubTypes.Type(name = "size", value = SizeOperation.class),
-
-        @JsonSubTypes.Type(name = "length", value = LengthOperation.class),
-        @JsonSubTypes.Type(name = "sub_str", value = SubStringOperation.class),
-
-        @JsonSubTypes.Type(name = "epoch", value = EpochOperation.class),
-        @JsonSubTypes.Type(name = "date_time", value = DateTimeOperation.class),
-		@JsonSubTypes.Type(name = "current_epoch_diff", value = DiffFromCurrentEpochOperation.class),
+@JSONType(typeKey = "operation", seeAlso = {
+        AddOperation.class,
+        SubtractOperation.class,
+        MultiplyOperation.class,
+        DivideOperation.class,
+        ModuloOperation.class,
+        SizeOperation.class,
+        LengthOperation.class,
+        SubStringOperation.class,
+        EpochOperation.class,
+        DateTimeOperation.class,
+        DiffFromCurrentEpochOperation.class
 })
 public abstract class PreOperation<T> {
 	private final PreOperationType operation;
 	
+	protected PreOperation(PreOperationType operation) {
+		this.operation = operation;
+	}
+
 	public abstract T compute(ExpressionEvaluationContext context);
 }

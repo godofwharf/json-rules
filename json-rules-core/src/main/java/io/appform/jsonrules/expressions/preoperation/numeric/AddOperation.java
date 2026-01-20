@@ -17,6 +17,7 @@
 
 package io.appform.jsonrules.expressions.preoperation.numeric;
 
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "add")
 public class AddOperation extends NumericPreOperation {
 	
 	public AddOperation() {

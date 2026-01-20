@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.composite;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
@@ -28,11 +29,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * And operator
+ * Not operator
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "not")
 public class NotExpression extends CompositeExpression {
     public NotExpression() {
         super(ExpressionType.not);
@@ -51,7 +53,7 @@ public class NotExpression extends CompositeExpression {
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

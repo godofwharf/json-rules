@@ -17,7 +17,8 @@
 
 package io.appform.jsonrules.expressions.string;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONType;
 import com.google.common.base.Strings;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.ExpressionVisitor;
@@ -28,11 +29,12 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
- * Check is string at json path ends with given value
+ * Check if a string ends with a given value
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "ends_with")
 public class EndsWithExpression extends StringJsonPathBasedExpression {
 
     public EndsWithExpression() {
@@ -57,7 +59,7 @@ public class EndsWithExpression extends StringJsonPathBasedExpression {
     }
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, JsonNode jsonNode) {
+    public <T> T accept(ExpressionVisitor<T> visitor, JSONObject jsonNode) {
         return visitor.visit(this, jsonNode);
     }
 }

@@ -17,18 +17,16 @@
 
 package io.appform.jsonrules.expressions.string;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.jayway.jsonpath.JsonPath;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.ExpressionType;
 import io.appform.jsonrules.expressions.JsonPathBasedExpression;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.utils.ComparisonUtils;
+import io.appform.jsonrules.utils.JsonPathUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import static io.appform.jsonrules.utils.ComparisonUtils.mapper;
 
 /**
  * All string operable expressions
@@ -54,19 +52,18 @@ public abstract class StringJsonPathBasedExpression extends JsonPathBasedExpress
     }
 
     @Override
-    protected final boolean evaluate(ExpressionEvaluationContext context, String path, JsonNode evaluatedNode) {
-        if (!evaluatedNode.isTextual()) {
+    protected final boolean evaluate(ExpressionEvaluationContext context, String path, Object evaluatedNode) {
+        if (!(evaluatedNode instanceof String)) {
             return false;
         }
         if (extractValueFromPath) {
-            JsonNode jsonNode = mapper.valueToTree(JsonPath.using(ComparisonUtils.SUPPRESS_EXCEPTION_CONFIG)
-                    .parse(context.getNode().toString()).read(value));
-            if (jsonNode == null || !jsonNode.isTextual()) {
+            Object raw = JsonPathUtils.read(ComparisonUtils.SUPPRESS_EXCEPTION_CONFIG, context.getNode(), value);
+            if (raw == null || !(raw instanceof String)) {
                 return false;
             }
-            return evaluate(evaluatedNode.asText(), jsonNode.asText(), ignoreCase);
+            return evaluate((String) evaluatedNode, (String) raw, ignoreCase);
         }
-        return evaluate(evaluatedNode.asText(), value, ignoreCase);
+        return evaluate((String) evaluatedNode, value, ignoreCase);
     }
 
     protected abstract boolean evaluate(String leftValue, String rightValue, boolean ignoreCase);

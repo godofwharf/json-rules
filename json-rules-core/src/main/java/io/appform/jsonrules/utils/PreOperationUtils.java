@@ -16,7 +16,6 @@
 
 package io.appform.jsonrules.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.experimental.UtilityClass;
 
 import java.text.SimpleDateFormat;
@@ -117,9 +116,16 @@ public class PreOperationUtils {
         throw new IllegalStateException();
     }
 
-    public static boolean isNumericRepresentation(JsonNode evaluatedNode) {
+    public static boolean isNumericRepresentation(Object evaluatedNode) {
+        if (evaluatedNode == null) {
+            return false;
+        }
         try {
-            Double.parseDouble(evaluatedNode.asText());
+            if (evaluatedNode instanceof String) {
+                Double.parseDouble((String) evaluatedNode);
+            } else {
+                Double.parseDouble(evaluatedNode.toString());
+            }
         } catch (NumberFormatException exception) {
             return false;
         }

@@ -17,7 +17,7 @@
 
 package io.appform.jsonrules.expressions.preoperation.date;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.annotation.JSONType;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
 import io.appform.jsonrules.utils.PreOperationUtils;
 import lombok.Builder;
@@ -30,6 +30,7 @@ import java.time.OffsetDateTime;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JSONType(typeName = "epoch")
 public class EpochOperation extends CalendarOperation {
 
 	public EpochOperation() {
@@ -45,11 +46,27 @@ public class EpochOperation extends CalendarOperation {
 		super(PreOperationType.epoch, operand, zoneOffSet, pattern);
 	}
 	@Override
-	protected Number compute(JsonNode evaluatedNode, String operand, String zoneOffSet, String pattern) {
+	protected Number compute(Object evaluatedNode, String operand, String zoneOffSet, String pattern) {
 		/**
-		 * Patten cant be used with epoch
+		 * Pattern can't be used with epoch
 		 */
-		final OffsetDateTime dateTime = PreOperationUtils.getDateTime(evaluatedNode.asLong(), zoneOffSet);
+		long epochValue;
+		if (evaluatedNode instanceof Number) {
+			epochValue = ((Number) evaluatedNode).longValue();
+		} else if (evaluatedNode instanceof String) {
+			// Try to parse string as epoch
+			try {
+				epochValue = Long.parseLong((String) evaluatedNode);
+			} catch (NumberFormatException e) {
+				// If it's not a valid number, return 0 to match old Jackson behavior (asLong() on non-numeric text returns 0)
+				epochValue = 0;
+			}
+		} else {
+			// Non-numeric, non-string - return 0 to match old behavior
+			epochValue = 0;
+		}
+
+		final OffsetDateTime dateTime = PreOperationUtils.getDateTime(epochValue, zoneOffSet);
 		return PreOperationUtils.getFromDateTime(dateTime, operand);
 	}
 }

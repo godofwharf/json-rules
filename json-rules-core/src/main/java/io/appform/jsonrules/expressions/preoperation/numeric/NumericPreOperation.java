@@ -17,7 +17,6 @@
 
 package io.appform.jsonrules.expressions.preoperation.numeric;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.expressions.preoperation.PreOperation;
 import io.appform.jsonrules.expressions.preoperation.PreOperationType;
@@ -44,16 +43,20 @@ public abstract class NumericPreOperation extends PreOperation<Number> {
 		this.operand = operand;
 	}
 
-	public Number compute(JsonNode evaluatedNode) {
-		if (evaluatedNode.isNumber()) {
-			if (evaluatedNode.isIntegralNumber()) {
-				return compute(evaluatedNode.asLong(), operand.longValue());
+	public Number compute(Object evaluatedNode) {
+		if (evaluatedNode instanceof Number) {
+			Number nodeValue = (Number) evaluatedNode;
+			boolean nodeIsIntegral = (nodeValue instanceof Integer || nodeValue instanceof Long ||
+			                          nodeValue instanceof Short || nodeValue instanceof Byte);
+
+			if (nodeIsIntegral) {
+				return compute(nodeValue.longValue(), operand.longValue());
 			} else {
-				return compute(evaluatedNode.asDouble(), operand.doubleValue());
+				return compute(nodeValue.doubleValue(), operand.doubleValue());
 			}
         } else if (PreOperationUtils.isNumericRepresentation(evaluatedNode)) {
             // For extending pre-operation to numbers represented as text.
-            return compute(Double.parseDouble(evaluatedNode.asText()), operand.doubleValue());
+            return compute(Double.parseDouble(evaluatedNode.toString()), operand.doubleValue());
         } else {
             throw new IllegalArgumentException("Non numeric operations are not supported");
         }
@@ -61,7 +64,7 @@ public abstract class NumericPreOperation extends PreOperation<Number> {
 
 	@Override
 	public Number compute(ExpressionEvaluationContext context) {
-		JsonNode node = context.getNode();
+		Object node = context.getNode();
 		return compute(node);
 	}
 
