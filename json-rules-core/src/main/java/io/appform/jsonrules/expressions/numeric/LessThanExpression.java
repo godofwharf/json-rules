@@ -36,12 +36,12 @@ public class LessThanExpression extends NumericJsonPathBasedExpression {
 
     @Builder
     public LessThanExpression(String path, Object value, boolean extractValueFromPath, boolean defaultResult,
-            PreOperation<?> preoperation) {
+                              PreOperation<?> preoperation) {
         super(ExpressionType.less_than, path, value, extractValueFromPath, defaultResult, preoperation);
     }
 
     public LessThanExpression(String path, Object value, boolean extractValueFromPath, PreOperation<?> preoperation) {
-        this(path, value, extractValueFromPath, false, preoperation);    
+        this(path, value, extractValueFromPath, false, preoperation);
     }
 
     protected boolean evaluate(ExpressionEvaluationContext context, int comparisonResult) {

@@ -1,0 +1,4 @@
+
+Baseline after migration: 16% better than jackson
+Benchmark                                Mode  Cnt        Score        Error  Units
+ExpressionEvaluationBenchmark.evaluate  thrpt   15  5631448.123 ± 327115.104  ops/s

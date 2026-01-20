@@ -36,12 +36,12 @@ public class GreaterThanExpression extends NumericJsonPathBasedExpression {
 
     @Builder
     public GreaterThanExpression(String path, Object value, boolean extractValueFromPath, boolean defaultResult,
-            PreOperation<?> preoperation) {
+                                 PreOperation<?> preoperation) {
         super(ExpressionType.greater_than, path, value, extractValueFromPath, defaultResult, preoperation);
     }
 
     public GreaterThanExpression(String path, Object value, boolean extractValueFromPath,
-            PreOperation<?> preoperation) {
+                                 PreOperation<?> preoperation) {
         this(path, value, extractValueFromPath, false, preoperation);
     }
 

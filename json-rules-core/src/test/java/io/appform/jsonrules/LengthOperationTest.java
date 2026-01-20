@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2018 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,7 +73,7 @@ public class LengthOperationTest {
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.abcd")
                 .preoperation(LengthOperation.builder().build())
-                .values(Sets.newHashSet(6,7))
+                .values(Sets.newHashSet(6, 7))
                 .build()
                 .evaluate(context));
         Assert.assertTrue(GreaterThanExpression.builder()
@@ -89,40 +89,40 @@ public class LengthOperationTest {
                 .build()
                 .evaluate(context));
     }
-    
+
     @Test
     public void testNegativeCases() throws Exception {
         try {
             EqualsExpression.builder()
-            .path("$.array_values")
-            .preoperation(LengthOperation.builder().build())
-            .value(20)
-            .build()
-            .evaluate(context);
+                    .path("$.array_values")
+                    .preoperation(LengthOperation.builder().build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Size operation is not supported", true);
         }
-        
+
         try {
             EqualsExpression.builder()
-            .path("$.kid")
-            .preoperation(LengthOperation.builder().build())
-            .value(20)
-            .build()
-            .evaluate(context);
+                    .path("$.kid")
+                    .preoperation(LengthOperation.builder().build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Size operation is not supported", true);
         }
 
         Assert.assertFalse(EqualsExpression.builder()
-            .path("$.xyzx")
-            .preoperation(LengthOperation.builder().build())
-            .value(20)
-            .defaultResult(false)
-            .build()
-            .evaluate(context));
+                .path("$.xyzx")
+                .preoperation(LengthOperation.builder().build())
+                .value(20)
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class LengthOperationTest {
         JSONObject node = TestJson.obj("{ \"value\": \"Hello World\", \"string\" : \"Hello\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testRepresentation() throws Exception {
         Rule rule = new Rule(NotExpression.builder()
@@ -158,5 +158,5 @@ public class LengthOperationTest {
         Rule deserializedRule = Rule.create(ruleRep);
         Assert.assertEquals(rule, deserializedRule);
     }
-    
+
 }

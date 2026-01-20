@@ -24,7 +24,7 @@ public class RuleTest {
         Assert.assertTrue(rule.matches((Object) node));
         long currentTime = System.currentTimeMillis();
         for (int i = 0; i < 1000000; i++) {
-            if(!rule.matches((Object) node)) {
+            if (!rule.matches((Object) node)) {
                 System.err.println("Mismatch");
             }
         }
@@ -62,10 +62,10 @@ public class RuleTest {
         final String ruleRepr = TestUtils.read("/complex.rule");
         Rule rule = Rule.create(ruleRepr);
         JSONObject node = TestJson.obj("{ \"value\": 20, \"string\" : \"Hello\" }");
-        for(int j = 0; j < 10; j++) {
+        for (int j = 0; j < 10; j++) {
             long currentTime = System.currentTimeMillis();
             for (long i = 0; i < 10_000_000; i++) {
-                if(!rule.matches((Object) node)) {
+                if (!rule.matches((Object) node)) {
                     System.err.println("Mismatch");
                 }
             }

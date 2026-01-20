@@ -5,7 +5,6 @@ import com.alibaba.fastjson2.JSONObject;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.config.JsonRulesConfiguration;
-import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.io.InputStream;
@@ -19,6 +18,11 @@ import java.util.HashMap;
 @Measurement(iterations = 3, time = 5)
 @BenchmarkMode(value = Mode.Throughput)
 public class ExpressionEvaluationBenchmark {
+    @Benchmark
+    public void evaluate(State state, Blackhole bh) {
+        bh.consume(state.expression.evaluate(state.context));
+    }
+
     @org.openjdk.jmh.annotations.State(value = Scope.Benchmark)
     public static class State {
         private Expression expression;
@@ -52,10 +56,5 @@ public class ExpressionEvaluationBenchmark {
                 return new String(is.readAllBytes(), StandardCharsets.UTF_8);
             }
         }
-    }
-
-    @Benchmark
-    public void evaluate(State state, Blackhole bh) {
-        bh.consume(state.expression.evaluate(state.context));
     }
 }

@@ -47,7 +47,7 @@ public class EqualsExpression extends JsonPathBasedExpression {
 
     @Builder
     public EqualsExpression(String path, Object value, boolean extractValueFromPath, boolean defaultResult,
-            PreOperation<?> preoperation) {
+                            PreOperation<?> preoperation) {
         super(ExpressionType.equals, path, defaultResult, preoperation);
         this.value = value;
         this.extractValueFromPath = extractValueFromPath;
@@ -58,7 +58,7 @@ public class EqualsExpression extends JsonPathBasedExpression {
     }
 
     public EqualsExpression(String path, Object value, PreOperation<?> preoperation) {
-        this(path, value,false, preoperation);
+        this(path, value, false, preoperation);
     }
 
     @Override

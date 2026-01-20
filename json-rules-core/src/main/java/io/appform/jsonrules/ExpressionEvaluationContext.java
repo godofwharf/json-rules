@@ -17,19 +17,44 @@
 
 package io.appform.jsonrules;
 
-import lombok.AllArgsConstructor;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Context passed to expression evaluator
  */
 @Data
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class ExpressionEvaluationContext {
     private Object node;
-    private Map<OptionKeys, Object> options;
+    private Map<OptionKeys, Object> options = new HashMap<>();
+
+    @Builder
+    public ExpressionEvaluationContext(final Object node,
+                                       final Map<OptionKeys, Object> options) {
+        this.node = node;
+        this.options = options == null ? new HashMap<>() : options;
+        if (!(node instanceof JSONObject || node instanceof JSONArray)) {
+            throw new IllegalArgumentException("Node must be a JSONObject or JSONArray");
+        }
+    }
+
+    public static ExpressionEvaluationContext construct(final String json,
+                                                        final Map<OptionKeys, Object> options) {
+        Object node = JSONObject.parseObject(json, JSONObject.class);
+        return new ExpressionEvaluationContext(node, options);
+    }
+
+    public void setNode(Object node) {
+        if (!(node instanceof JSONObject || node instanceof JSONArray)) {
+            throw new IllegalArgumentException("Node must be a JSONObject or JSONArray");
+        }
+        this.node = node;
+    }
 }

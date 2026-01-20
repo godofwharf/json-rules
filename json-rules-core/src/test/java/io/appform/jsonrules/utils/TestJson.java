@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONReader;
 
 /**
  * Test-only JSON helpers.
- *
+ * <p>
  * Used across unit tests to create fastjson2 objects from string literals.
  */
 

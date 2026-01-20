@@ -31,6 +31,9 @@ public class ComparisonUtils {
     public static final Configuration SUPPRESS_EXCEPTION_CONFIG = EvaluationConfiguration.getInstance().getConfiguration()
             .addOptions(Option.SUPPRESS_EXCEPTIONS);
 
+    private ComparisonUtils() {
+    }
+
     public static int compare(Object evaluatedNode, Object value) {
         int comparisonResult = 0;
         if (isNumber(evaluatedNode)) {
@@ -156,7 +159,7 @@ public class ComparisonUtils {
 
     private static boolean isIntegralNumber(Object value) {
         return value instanceof Integer || value instanceof Long ||
-               value instanceof Short || value instanceof Byte;
+                value instanceof Short || value instanceof Byte;
     }
 
     private static boolean isBoolean(Object value) {
@@ -184,6 +187,4 @@ public class ComparisonUtils {
             return resultIfNull;
         return defaultResult;
     }
-
-    private ComparisonUtils() {}
 }

@@ -6,7 +6,7 @@ import com.jayway.jsonpath.spi.cache.Cache;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UnboundedCache implements Cache  {
+public class UnboundedCache implements Cache {
     private final Map<String, JsonPath> map = new ConcurrentHashMap<>(1024);
 
     @Override

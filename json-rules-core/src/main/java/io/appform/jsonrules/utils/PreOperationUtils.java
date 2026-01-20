@@ -28,6 +28,7 @@ import java.util.Date;
 
 @UtilityClass
 public class PreOperationUtils {
+    public static final String YEAR = "year";
     private static final String MONTH_OF_YEAR = "month_of_year";
     private static final String WEEK_OF_YEAR = "week_of_year";
     private static final String WEEK_OF_MONTH = "week_of_month";
@@ -36,29 +37,28 @@ public class PreOperationUtils {
     private static final String DAY_OF_WEEK = "day_of_week";
     private static final String HOUR_OF_DAY = "hour_of_day";
     private static final String MINUTE_OF_HOUR = "minute_of_hour";
-    public static final String YEAR = "year";
 
     public static int getFromDateTime(OffsetDateTime dateTime, String field) {
         switch (field) {
-        case MINUTE_OF_HOUR:
-            return dateTime.get(ChronoField.MINUTE_OF_HOUR);
-        case HOUR_OF_DAY:
-            return dateTime.get(ChronoField.HOUR_OF_DAY);
-        case DAY_OF_WEEK:
-            return dateTime.get(ChronoField.DAY_OF_WEEK);
-        case DAY_OF_MONTH:
-            return dateTime.get(ChronoField.DAY_OF_MONTH);
-        case DAY_OF_YEAR:
-            return dateTime.get(ChronoField.DAY_OF_YEAR);
-        case WEEK_OF_MONTH:
-            return dateTime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
-        case WEEK_OF_YEAR:
-            return dateTime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-        case MONTH_OF_YEAR:
-            return dateTime.get(ChronoField.MONTH_OF_YEAR);
-        case YEAR:
-            return dateTime.get(ChronoField.YEAR);
-        default:
+            case MINUTE_OF_HOUR:
+                return dateTime.get(ChronoField.MINUTE_OF_HOUR);
+            case HOUR_OF_DAY:
+                return dateTime.get(ChronoField.HOUR_OF_DAY);
+            case DAY_OF_WEEK:
+                return dateTime.get(ChronoField.DAY_OF_WEEK);
+            case DAY_OF_MONTH:
+                return dateTime.get(ChronoField.DAY_OF_MONTH);
+            case DAY_OF_YEAR:
+                return dateTime.get(ChronoField.DAY_OF_YEAR);
+            case WEEK_OF_MONTH:
+                return dateTime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+            case WEEK_OF_YEAR:
+                return dateTime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+            case MONTH_OF_YEAR:
+                return dateTime.get(ChronoField.MONTH_OF_YEAR);
+            case YEAR:
+                return dateTime.get(ChronoField.YEAR);
+            default:
         }
         throw new IllegalArgumentException("Operand does not represent a valid field");
     }
@@ -84,13 +84,12 @@ public class PreOperationUtils {
     public static OffsetDateTime getDateTime(String dateTimeStr, String zoneOffSet, String pattern) {
         try {
             Instant instant;
-            if(pattern != null) {
+            if (pattern != null) {
                 SimpleDateFormat df = new SimpleDateFormat(pattern);
                 Date date = df.parse(dateTimeStr);
                 long epoch = date.getTime();
                 instant = Instant.ofEpochMilli(epoch);
-            }
-            else {
+            } else {
                 instant = Instant.parse(dateTimeStr);
             }
             if (zoneOffSet != null && !zoneOffSet.trim()

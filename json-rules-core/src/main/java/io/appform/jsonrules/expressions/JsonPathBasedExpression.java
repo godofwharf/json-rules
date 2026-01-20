@@ -46,7 +46,7 @@ public abstract class JsonPathBasedExpression extends Expression {
     }
 
     protected JsonPathBasedExpression(ExpressionType type, String path, boolean defaultResult,
-            PreOperation<?> preoperation) {
+                                      PreOperation<?> preoperation) {
         this(type);
         this.path = path;
         this.preoperation = preoperation;
@@ -93,7 +93,7 @@ public abstract class JsonPathBasedExpression extends Expression {
 
         // Only handle simple property paths (no arrays, wildcards, filters, etc.)
         if (pathRemainder.contains("[") || pathRemainder.contains("*") ||
-            pathRemainder.contains("?") || pathRemainder.contains("@")) {
+                pathRemainder.contains("?") || pathRemainder.contains("@")) {
             return false;
         }
 

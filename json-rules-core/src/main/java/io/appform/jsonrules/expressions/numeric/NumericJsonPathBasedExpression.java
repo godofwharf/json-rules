@@ -43,7 +43,7 @@ public abstract class NumericJsonPathBasedExpression extends JsonPathBasedExpres
     }
 
     protected NumericJsonPathBasedExpression(ExpressionType type, String path, Object value,
-            boolean extractValueFromPath, boolean defaultResult, PreOperation<?> preoperation) {
+                                             boolean extractValueFromPath, boolean defaultResult, PreOperation<?> preoperation) {
         super(type, path, defaultResult, preoperation);
         this.value = value;
         this.extractValueFromPath = extractValueFromPath;
@@ -71,9 +71,9 @@ public abstract class NumericJsonPathBasedExpression extends JsonPathBasedExpres
 
         // Check if both are integral or floating point
         boolean nodeIsIntegral = (nodeValue instanceof Integer || nodeValue instanceof Long ||
-                                   nodeValue instanceof Short || nodeValue instanceof Byte);
+                nodeValue instanceof Short || nodeValue instanceof Byte);
         boolean valueIsIntegral = (numericalValue instanceof Integer || numericalValue instanceof Long ||
-                                    numericalValue instanceof Short || numericalValue instanceof Byte);
+                numericalValue instanceof Short || numericalValue instanceof Byte);
 
         if (nodeIsIntegral && valueIsIntegral) {
             comparisonResult = Long.compare(nodeValue.longValue(), numericalValue.longValue());

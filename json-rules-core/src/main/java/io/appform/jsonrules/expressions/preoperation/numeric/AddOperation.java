@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,24 +29,24 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @JSONType(typeName = "add")
 public class AddOperation extends NumericPreOperation {
-	
-	public AddOperation() {
-		super(PreOperationType.add);
-	}
-	
-	@Builder
-	public AddOperation(Number operand) {
-		super(PreOperationType.add, operand);
-	}
 
-	@Override
-	public long compute(long leftOperand, long rightOperand) {
-		return Long.sum(leftOperand, rightOperand);
-	}
+    public AddOperation() {
+        super(PreOperationType.add);
+    }
 
-	@Override
-	public double compute(double leftOperand, double rightOperand) {
-		return Double.sum(leftOperand, rightOperand);
-	}
+    @Builder
+    public AddOperation(Number operand) {
+        super(PreOperationType.add, operand);
+    }
+
+    @Override
+    public long compute(long leftOperand, long rightOperand) {
+        return Long.sum(leftOperand, rightOperand);
+    }
+
+    @Override
+    public double compute(double leftOperand, double rightOperand) {
+        return Double.sum(leftOperand, rightOperand);
+    }
 
 }

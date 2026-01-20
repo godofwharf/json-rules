@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,99 +37,99 @@ public class StringExpressionTest {
         JSONObject node = TestJson.obj("{ \"value\": 20, \"emptyString\" : \"\", \"s3\" : \"Hello.*\", \"s1\" : \"HelloAllHello\", \"s2\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"boolean\" : true }");
         context = ExpressionEvaluationContext.builder().node(node).build();
     }
- 
+
     @Test
     public void testEmptyExpression() throws Exception {
         Assert.assertTrue(EmptyExpression.builder()
-        		.path("$.somepath")
-        		.defaultResult(true)
-        		.build()
-        		.evaluate(context));
+                .path("$.somepath")
+                .defaultResult(true)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(EmptyExpression.builder()
-        		.path("$.string")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(EmptyExpression.builder()
-        		.path("$.emptyString")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.emptyString")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(EmptyExpression.builder()
-        		.path("$.kid") // value is null; hence not a textual node
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.kid") // value is null; hence not a textual node
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(EmptyExpression.builder()
-        		.path("$.efgh")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.efgh")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
     }
 
     @Test
     public void testNotEmptyExpression() throws Exception {
-    	Assert.assertTrue(NotEmptyExpression.builder()
-    			.path("$.somepath")
-    			.defaultResult(true)
-    			.build()
-    			.evaluate(context));
-    	Assert.assertTrue(NotEmptyExpression.builder()
-    			.path("$.string")
-    			.build()
-    			.evaluate(context));
-    	Assert.assertFalse(NotEmptyExpression.builder()
-        		.path("$.emptyString")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
-    	Assert.assertFalse(NotEmptyExpression.builder()
-    			.path("$.kid") // value is null; hence not a textual node
-    			.build()
-    			.evaluate(context));
-    	Assert.assertFalse(NotEmptyExpression.builder()
-    			.path("$.efgh")
-    			.build()
-    			.evaluate(context));
+        Assert.assertTrue(NotEmptyExpression.builder()
+                .path("$.somepath")
+                .defaultResult(true)
+                .build()
+                .evaluate(context));
+        Assert.assertTrue(NotEmptyExpression.builder()
+                .path("$.string")
+                .build()
+                .evaluate(context));
+        Assert.assertFalse(NotEmptyExpression.builder()
+                .path("$.emptyString")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
+        Assert.assertFalse(NotEmptyExpression.builder()
+                .path("$.kid") // value is null; hence not a textual node
+                .build()
+                .evaluate(context));
+        Assert.assertFalse(NotEmptyExpression.builder()
+                .path("$.efgh")
+                .build()
+                .evaluate(context));
     }
 
     @Test
     public void testStartsWithExpression() throws Exception {
         Assert.assertTrue(StartsWithExpression.builder()
-        		.path("$.somepath")
-        		.defaultResult(true)
-        		.build()
-        		.evaluate(context));
+                .path("$.somepath")
+                .defaultResult(true)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(StartsWithExpression.builder()
-        		.path("$.string")
-        		.value("He")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("He")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(StartsWithExpression.builder()
-        		.path("$.string")
-        		.value("he")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("he")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(StartsWithExpression.builder()
-        		.path("$.string")
-        		.value("he")
-        		.ignoreCase(true)
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("he")
+                .ignoreCase(true)
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(StartsWithExpression.builder()
-        		.path("$.kid") // value is null; hence not a textual node
-        		.value("xyz")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.kid") // value is null; hence not a textual node
+                .value("xyz")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(StartsWithExpression.builder()
-        		.path("$.efgh")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.efgh")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(StartsWithExpression.builder()
                 .path("$.s1")
                 .value("$.s2")
@@ -138,44 +138,44 @@ public class StringExpressionTest {
                 .build()
                 .evaluate(context));
     }
-    
+
     @Test
     public void testEndsWithExpression() throws Exception {
         Assert.assertTrue(EndsWithExpression.builder()
-        		.path("$.somepath")
-        		.defaultResult(true)
-        		.build()
-        		.evaluate(context));
+                .path("$.somepath")
+                .defaultResult(true)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(EndsWithExpression.builder()
-        		.path("$.string")
-        		.value("lo")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("lo")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(EndsWithExpression.builder()
-        		.path("$.string")
-        		.value("LO")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("LO")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(EndsWithExpression.builder()
-        		.path("$.string")
-        		.value("LO")
-        		.ignoreCase(true)
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("LO")
+                .ignoreCase(true)
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(EndsWithExpression.builder()
-        		.path("$.kid") // value is null; hence not a textual node
-        		.value("xyz")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.kid") // value is null; hence not a textual node
+                .value("xyz")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(EndsWithExpression.builder()
-        		.path("$.efgh")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.efgh")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(EndsWithExpression.builder()
                 .path("$.s1")
                 .value("$.s2")
@@ -184,50 +184,50 @@ public class StringExpressionTest {
                 .build()
                 .evaluate(context));
     }
-    
+
     @Test
     public void testMatchesExpression() throws Exception {
         Assert.assertTrue(MatchesExpression.builder()
-        		.path("$.somepath")
-        		.defaultResult(true)
-        		.build()
-        		.evaluate(context));
+                .path("$.somepath")
+                .defaultResult(true)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(MatchesExpression.builder()
-        		.path("$.string")
-        		.value(".*lo")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value(".*lo")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(MatchesExpression.builder()
-        		.path("$.string")
-        		.value("H.?llo")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value("H.?llo")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(MatchesExpression.builder()
-        		.path("$.string")
-        		.value(".*LO")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value(".*LO")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(MatchesExpression.builder()
-        		.path("$.string")
-        		.value(".*LO")
-        		.ignoreCase(true)
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.string")
+                .value(".*LO")
+                .ignoreCase(true)
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(MatchesExpression.builder()
-        		.path("$.kid") // value is null; hence not a textual node
-        		.value("xyz")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.kid") // value is null; hence not a textual node
+                .value("xyz")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertFalse(MatchesExpression.builder()
-        		.path("$.efgh")
-        		.defaultResult(false)
-        		.build()
-        		.evaluate(context));
+                .path("$.efgh")
+                .defaultResult(false)
+                .build()
+                .evaluate(context));
         Assert.assertTrue(MatchesExpression.builder()
                 .path("$.s1")
                 .value("$.s3")
@@ -236,7 +236,7 @@ public class StringExpressionTest {
                 .build()
                 .evaluate(context));
     }
-    
+
     @Test
     public void testEmptyRule() throws Exception {
         final String ruleRepr = TestUtils.read("/emptyExpression.rule");
@@ -244,7 +244,7 @@ public class StringExpressionTest {
         JSONObject node = TestJson.obj("{ \"value\": 8, \"string\" : \"\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testNotEmptyRule() throws Exception {
         final String ruleRepr = TestUtils.read("/notEmptyExpression.rule");
@@ -252,7 +252,7 @@ public class StringExpressionTest {
         JSONObject node = TestJson.obj("{ \"value\": 8, \"string\" : \"Hello World\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testStartsWithRule() throws Exception {
         final String ruleRepr = TestUtils.read("/startsWithExpression.rule");
@@ -260,7 +260,7 @@ public class StringExpressionTest {
         JSONObject node = TestJson.obj("{ \"value\": 8, \"string\" : \"Hello World\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testEndsWithRule() throws Exception {
         final String ruleRepr = TestUtils.read("/endsWithExpression.rule");
@@ -276,7 +276,7 @@ public class StringExpressionTest {
         JSONObject node = TestJson.obj("{ \"value\": 8, \"string\" : \"Hello World\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testExtractPathRule() throws Exception {
         final String ruleRepr = TestUtils.read("/extractPathExpression.rule");
@@ -311,6 +311,6 @@ public class StringExpressionTest {
         Rule deserializedRule = Rule.create(ruleRep);
         Assert.assertEquals(rule, deserializedRule);
     }
-    
+
 
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,33 +33,34 @@ import java.time.OffsetDateTime;
 @JSONType(typeName = "date_time")
 public class DateTimeOperation extends CalendarOperation {
 
-	protected DateTimeOperation() {
-		super(PreOperationType.date_time);
-	}
-	public DateTimeOperation(String operand, String zoneOffSet) {
-		super(PreOperationType.date_time, operand, zoneOffSet, null);
-	}
+    protected DateTimeOperation() {
+        super(PreOperationType.date_time);
+    }
 
-	@Builder
-	public DateTimeOperation(String operand, String zoneOffSet, String pattern) {
-		super(PreOperationType.date_time, operand, zoneOffSet, pattern);
-	}
+    public DateTimeOperation(String operand, String zoneOffSet) {
+        super(PreOperationType.date_time, operand, zoneOffSet, null);
+    }
 
-	@Override
-	public Number compute(Object evaluatedNode, String operand, String zoneOffset, String pattern) {
-		try {
-			String dateTimeString;
-			if (evaluatedNode instanceof String) {
-				dateTimeString = (String) evaluatedNode;
-			} else {
-				throw new IllegalArgumentException("DateTime operation requires a string value");
-			}
+    @Builder
+    public DateTimeOperation(String operand, String zoneOffSet, String pattern) {
+        super(PreOperationType.date_time, operand, zoneOffSet, pattern);
+    }
 
-			final OffsetDateTime dateTime = PreOperationUtils.getDateTime(dateTimeString, zoneOffset, pattern);
-			return PreOperationUtils.getFromDateTime(dateTime, operand);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Operand does not represent a valid date");
-		}
-	}
+    @Override
+    public Number compute(Object evaluatedNode, String operand, String zoneOffset, String pattern) {
+        try {
+            String dateTimeString;
+            if (evaluatedNode instanceof String) {
+                dateTimeString = (String) evaluatedNode;
+            } else {
+                throw new IllegalArgumentException("DateTime operation requires a string value");
+            }
+
+            final OffsetDateTime dateTime = PreOperationUtils.getDateTime(dateTimeString, zoneOffset, pattern);
+            return PreOperationUtils.getFromDateTime(dateTime, operand);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Operand does not represent a valid date");
+        }
+    }
 
 }

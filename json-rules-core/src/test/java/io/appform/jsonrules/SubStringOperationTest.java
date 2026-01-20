@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2018 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,19 +70,19 @@ public class SubStringOperationTest {
         Assert.assertTrue(InExpression.builder()
                 .path("$.abcd")
                 .preoperation(SubStringOperation.builder().beginIndex(1).endIndex(2).build())
-                .values(Sets.newHashSet("a","e","i","o","u"))
+                .values(Sets.newHashSet("a", "e", "i", "o", "u"))
                 .build()
                 .evaluate(context));
         Assert.assertFalse(InExpression.builder()
                 .path("$.abcd")
                 .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(1).build())
-                .values(Sets.newHashSet("a","e","i","o","u"))
+                .values(Sets.newHashSet("a", "e", "i", "o", "u"))
                 .build()
                 .evaluate(context));
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.abcd")
                 .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(1).build())
-                .values(Sets.newHashSet("a","e","i","o","u"))
+                .values(Sets.newHashSet("a", "e", "i", "o", "u"))
                 .build()
                 .evaluate(context));
         Assert.assertTrue(EmptyExpression.builder()
@@ -97,102 +97,102 @@ public class SubStringOperationTest {
                 .build()
                 .evaluate(context));
     }
-    
+
     @Test
     public void testNegativeCases() throws Exception {
         try {
             // On Array
             EqualsExpression.builder()
-                .path("$.array_values")
-                .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(1).build())
-                .value(20)
-                .build()
-                .evaluate(context);
-                Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+                    .path("$.array_values")
+                    .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(1).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
-        
+
         try {
             // On Null value
             EqualsExpression.builder()
-                .path("$.kid")
-                .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(1).build())
-                .value(20)
-                .build()
-                .evaluate(context);
-                Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+                    .path("$.kid")
+                    .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(1).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
-        
+
         try {
             // On valid string, but beginIndex & endIndex not given
             EqualsExpression.builder()
-                .path("$.abcd")
-                .preoperation(SubStringOperation.builder().build())
-                .value(20)
-                .defaultResult(false)
-                .build()
-                .evaluate(context);
+                    .path("$.abcd")
+                    .preoperation(SubStringOperation.builder().build())
+                    .value(20)
+                    .defaultResult(false)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
-        
+
         try {
             // On valid string, but invalid endIndex given
             EqualsExpression.builder()
-                .path("$.abcd")
-                .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(-2).build())
-                .value(20)
-                .defaultResult(false)
-                .build()
-                .evaluate(context);
+                    .path("$.abcd")
+                    .preoperation(SubStringOperation.builder().beginIndex(0).endIndex(-2).build())
+                    .value(20)
+                    .defaultResult(false)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
-        
+
         try {
             // On valid string, but invalid beginIndex given
             EqualsExpression.builder()
-                .path("$.abcd")
-                .preoperation(SubStringOperation.builder().beginIndex(-2).build())
-                .value(20)
-                .defaultResult(false)
-                .build()
-                .evaluate(context);
+                    .path("$.abcd")
+                    .preoperation(SubStringOperation.builder().beginIndex(-2).build())
+                    .value(20)
+                    .defaultResult(false)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
-        
+
         try {
             // On valid string, but beginIndex NOT given
             EqualsExpression.builder()
-                .path("$.abcd")
-                .preoperation(SubStringOperation.builder().endIndex(1).build())
-                .value(20)
-                .defaultResult(false)
-                .build()
-                .evaluate(context);
+                    .path("$.abcd")
+                    .preoperation(SubStringOperation.builder().endIndex(1).build())
+                    .value(20)
+                    .defaultResult(false)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
 
         try {
             // On valid string, but endIndex is greater than string length
             EqualsExpression.builder()
-                .path("$.abcd")
-                .preoperation(SubStringOperation.builder().endIndex(100).build())
-                .value(20)
-                .defaultResult(false)
-                .build()
-                .evaluate(context);
+                    .path("$.abcd")
+                    .preoperation(SubStringOperation.builder().endIndex(100).build())
+                    .value(20)
+                    .defaultResult(false)
+                    .build()
+                    .evaluate(context);
             Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Assert.assertTrue("Sub string operation is not supported", true);
         }
 
@@ -211,7 +211,7 @@ public class SubStringOperationTest {
         JSONObject node = TestJson.obj("{ \"value\": \"Hello World\", \"string\" : \"Hello\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testRepresentation() throws Exception {
         Rule rule = new Rule(NotExpression.builder()
@@ -239,5 +239,5 @@ public class SubStringOperationTest {
         Rule deserializedRule = Rule.create(ruleRep);
         Assert.assertEquals(rule, deserializedRule);
     }
-    
+
 }

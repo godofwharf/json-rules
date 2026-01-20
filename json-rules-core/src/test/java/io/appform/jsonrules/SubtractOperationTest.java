@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +48,7 @@ public class SubtractOperationTest {
         dateTime = Instant.now();
         long epoch = dateTime.getEpochSecond();
         String dateTimeStr = new StringBuilder().append("\"").append(dateTime.toString()).append("\"").toString();
-        JSONObject node = TestJson.obj("{ \"stringifiedValue\": \"9886098860\",\"value\": 20, \"abcd\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"epochTime\" : "+epoch+", \"dateTime\" : "+dateTimeStr+" }");
+        JSONObject node = TestJson.obj("{ \"stringifiedValue\": \"9886098860\",\"value\": 20, \"abcd\" : \"Hello\",\"string\" : \"Hello\", \"kid\": null, \"epochTime\" : " + epoch + ", \"dateTime\" : " + dateTimeStr + " }");
         context = ExpressionEvaluationContext.builder().node(node).build();
     }
 
@@ -78,29 +78,29 @@ public class SubtractOperationTest {
                 .value(9886098858L)
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	EqualsExpression.builder()
-            .path("$.abcd")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .value(20)
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            EqualsExpression.builder()
+                    .path("$.abcd")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
-        
+
         try {
-        	EqualsExpression.builder()
-            .path("$.kid")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .value(20)
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            EqualsExpression.builder()
+                    .path("$.kid")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
     }
 
@@ -119,27 +119,27 @@ public class SubtractOperationTest {
                 .build()
                 .evaluate(context));
         try {
-        	NotEqualsExpression.builder()
-            .path("$.abcd")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .value(20)
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            NotEqualsExpression.builder()
+                    .path("$.abcd")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
-        
+
         try {
-        	NotEqualsExpression.builder()
-            .path("$.kid")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .value(20)
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            NotEqualsExpression.builder()
+                    .path("$.kid")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
     }
 
@@ -157,32 +157,32 @@ public class SubtractOperationTest {
                 .values(Sets.newHashSet(22))
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	InExpression.builder()
-            .path("$.abcd")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .values(Sets.newHashSet(20))
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            InExpression.builder()
+                    .path("$.abcd")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .values(Sets.newHashSet(20))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
-        
+
         try {
-        	InExpression.builder()
-            .path("$.kid")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .values(Sets.newHashSet(20))
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            InExpression.builder()
+                    .path("$.kid")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .values(Sets.newHashSet(20))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
     }
-    
+
     @Test
     public void testWithNotInExpression() throws Exception {
         Assert.assertFalse(NotInExpression.builder()
@@ -197,32 +197,32 @@ public class SubtractOperationTest {
                 .values(Sets.newHashSet(22))
                 .build()
                 .evaluate(context));
-        
+
         try {
-        	NotInExpression.builder()
-            .path("$.abcd")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .values(Sets.newHashSet(20))
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            NotInExpression.builder()
+                    .path("$.abcd")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .values(Sets.newHashSet(20))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
-        
+
         try {
-        	NotInExpression.builder()
-            .path("$.kid")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .values(Sets.newHashSet(20))
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            NotInExpression.builder()
+                    .path("$.kid")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .values(Sets.newHashSet(20))
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
     }
-    
+
     @Test
     public void testWithNumbericExpression() throws Exception {
         Assert.assertTrue(LessThanExpression.builder()
@@ -239,30 +239,30 @@ public class SubtractOperationTest {
                 .evaluate(context));
 
         try {
-        	GreaterThanExpression.builder()
-            .path("$.abcd")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .value(20)
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            GreaterThanExpression.builder()
+                    .path("$.abcd")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
-        
+
         try {
-        	GreaterThanExpression.builder()
-            .path("$.kid")
-            .preoperation(SubtractOperation.builder().operand(2).build())
-            .value(20)
-            .build()
-            .evaluate(context);
-        	Assert.fail("Should have thrown an exception");
-        } catch(IllegalArgumentException e) {
-        	Assert.assertTrue("Object numeric operations are not supported", true);
+            GreaterThanExpression.builder()
+                    .path("$.kid")
+                    .preoperation(SubtractOperation.builder().operand(2).build())
+                    .value(20)
+                    .build()
+                    .evaluate(context);
+            Assert.fail("Should have thrown an exception");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue("Object numeric operations are not supported", true);
         }
     }
-    
+
     @Test
     public void testRule() throws Exception {
         final String ruleRepr = TestUtils.read("/subtractOperation.rule");
@@ -270,7 +270,7 @@ public class SubtractOperationTest {
         JSONObject node = TestJson.obj("{ \"value\": 8, \"string\" : \"Hello\" }");
         Assert.assertTrue(rule.matches((Object) node));
     }
-    
+
     @Test
     public void testRepresentation() throws Exception {
         Rule rule = new Rule(NotExpression.builder()
@@ -296,6 +296,6 @@ public class SubtractOperationTest {
         Rule deserializedRule = Rule.create(ruleRep);
         Assert.assertEquals(rule, deserializedRule);
     }
-    
+
 
 }

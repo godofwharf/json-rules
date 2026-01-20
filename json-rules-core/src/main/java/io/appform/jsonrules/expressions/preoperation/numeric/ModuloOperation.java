@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,32 +29,32 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @JSONType(typeName = "modulo")
 public class ModuloOperation extends NumericPreOperation {
-	
-	public ModuloOperation() {
-		super(PreOperationType.modulo);
-	}
-	
-	@Builder
-	public ModuloOperation(Number operand) {
-		super(PreOperationType.modulo, operand);
-	}
 
-	@Override
-	public long compute(long leftOperand, long rightOperand) {
-		if (rightOperand == 0) {
-			throw new IllegalArgumentException("Division by zero not allowed");
-		}
-		return Long.remainderUnsigned(leftOperand, rightOperand);
-	}
+    public ModuloOperation() {
+        super(PreOperationType.modulo);
+    }
 
-	@Override
-	public double compute(double leftOperand, double rightOperand) {
-		if (Double.isInfinite(leftOperand) || Double.isInfinite(rightOperand)) {
-			throw new IllegalArgumentException("Atleast one of the operands is infinite");
-		} else if (rightOperand == 0) {
-			throw new IllegalArgumentException("Division by zero not allowed");
-		}
-		return (leftOperand % rightOperand);
-	}
-	
+    @Builder
+    public ModuloOperation(Number operand) {
+        super(PreOperationType.modulo, operand);
+    }
+
+    @Override
+    public long compute(long leftOperand, long rightOperand) {
+        if (rightOperand == 0) {
+            throw new IllegalArgumentException("Division by zero not allowed");
+        }
+        return Long.remainderUnsigned(leftOperand, rightOperand);
+    }
+
+    @Override
+    public double compute(double leftOperand, double rightOperand) {
+        if (Double.isInfinite(leftOperand) || Double.isInfinite(rightOperand)) {
+            throw new IllegalArgumentException("Atleast one of the operands is infinite");
+        } else if (rightOperand == 0) {
+            throw new IllegalArgumentException("Division by zero not allowed");
+        }
+        return (leftOperand % rightOperand);
+    }
+
 }

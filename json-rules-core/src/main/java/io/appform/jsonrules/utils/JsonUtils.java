@@ -1,11 +1,9 @@
 package io.appform.jsonrules.utils;
 
 import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import lombok.experimental.UtilityClass;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @UtilityClass

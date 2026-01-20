@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2017 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,39 +31,39 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public abstract class CalendarOperation extends PreOperation<Number> {
-	private String operand;
-	private String zoneOffSet;
-	private String pattern;
+    private String operand;
+    private String zoneOffSet;
+    private String pattern;
 
-	protected CalendarOperation(PreOperationType type) {
-		super(type);
-	}
-	
-	protected CalendarOperation(PreOperationType type, String operand, String zoneOffSet) {
-		this(type);
-		this.operand = operand;
-		this.zoneOffSet = zoneOffSet;
-	}
-	protected CalendarOperation(PreOperationType type, String operand, String zoneOffSet, String pattern) {
-		this(type, operand, zoneOffSet);
-		this.pattern = pattern;
-	}
+    protected CalendarOperation(PreOperationType type) {
+        super(type);
+    }
 
-	public Number compute(Object evaluatedNode) {
-		if (operand != null && (evaluatedNode instanceof Number || evaluatedNode instanceof String)) {
-			return compute(evaluatedNode, operand, zoneOffSet, pattern);
-		}
-		else {
-			throw new IllegalArgumentException("Operands do not represent valid values");
-		}
-	}
+    protected CalendarOperation(PreOperationType type, String operand, String zoneOffSet) {
+        this(type);
+        this.operand = operand;
+        this.zoneOffSet = zoneOffSet;
+    }
 
-	@Override
-	public Number compute(ExpressionEvaluationContext context) {
-		Object node = context.getNode();
-		return compute(node);
-	}
+    protected CalendarOperation(PreOperationType type, String operand, String zoneOffSet, String pattern) {
+        this(type, operand, zoneOffSet);
+        this.pattern = pattern;
+    }
 
-	protected abstract Number compute(Object evaluatedNode, String operand, String zoneOffSet, String pattern);
+    public Number compute(Object evaluatedNode) {
+        if (operand != null && (evaluatedNode instanceof Number || evaluatedNode instanceof String)) {
+            return compute(evaluatedNode, operand, zoneOffSet, pattern);
+        } else {
+            throw new IllegalArgumentException("Operands do not represent valid values");
+        }
+    }
+
+    @Override
+    public Number compute(ExpressionEvaluationContext context) {
+        Object node = context.getNode();
+        return compute(node);
+    }
+
+    protected abstract Number compute(Object evaluatedNode, String operand, String zoneOffSet, String pattern);
 
 }

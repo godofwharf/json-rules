@@ -21,7 +21,7 @@ public class CollectionDebugTest {
 
             ContainsAnyExpression expr = ContainsAnyExpression.builder()
                     .path("$.felines")
-                    .values(Sets.newHashSet("leopard","lion","panther"))
+                    .values(Sets.newHashSet("leopard", "lion", "panther"))
                     .defaultResult(false)
                     .build();
 

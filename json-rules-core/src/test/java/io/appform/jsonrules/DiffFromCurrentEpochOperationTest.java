@@ -1,15 +1,15 @@
 package io.appform.jsonrules;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.appform.jsonrules.utils.Rule;
-import io.appform.jsonrules.utils.TestJson;
-import io.appform.jsonrules.utils.TestUtils;
 import io.appform.jsonrules.expressions.composite.NotExpression;
 import io.appform.jsonrules.expressions.composite.OrExpression;
 import io.appform.jsonrules.expressions.equality.EqualsExpression;
 import io.appform.jsonrules.expressions.numeric.GreaterThanExpression;
 import io.appform.jsonrules.expressions.numeric.LessThanExpression;
 import io.appform.jsonrules.expressions.preoperation.date.DiffFromCurrentEpochOperation;
+import io.appform.jsonrules.utils.Rule;
+import io.appform.jsonrules.utils.TestJson;
+import io.appform.jsonrules.utils.TestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class DiffFromCurrentEpochOperationTest {
     @Before
     public void setUp() throws Exception {
         long epoch = System.currentTimeMillis();
-        JSONObject node = TestJson.obj("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : "+epoch+",\"setEpoch\": 1500000000000}");
+        JSONObject node = TestJson.obj("{ \"value\": 20, \"string\" : \"Hello\", \"kid\": null, \"epochTime\" : " + epoch + ",\"setEpoch\": 1500000000000}");
         context = ExpressionEvaluationContext.builder().node(node).build();
     }
 
@@ -34,19 +34,19 @@ public class DiffFromCurrentEpochOperationTest {
     public void testWithEquals() {
         Expression expression = EqualsExpression.builder().path("$.setEpoch")
                 .preoperation(DiffFromCurrentEpochOperation.builder()
-                                .build())
+                        .build())
                 .value(0)
                 .build();
-        Assert.assertTrue(expression.evaluate(context.getNode(), Collections.singletonMap(OptionKeys.SYSTEM_TIME,new Long(1500000000000L))));
+        Assert.assertTrue(expression.evaluate(context.getNode(), Collections.singletonMap(OptionKeys.SYSTEM_TIME, new Long(1500000000000L))));
     }
 
     @Test
-    public void testWithIntegerSystemTime()  throws Exception{
+    public void testWithIntegerSystemTime() throws Exception {
         try {
             Expression expression = EqualsExpression.builder().path("$.setEpoch")
                     .preoperation(DiffFromCurrentEpochOperation.builder()
                             .build()).value(0).build();
-            expression.evaluate(context.getNode(), Collections.singletonMap(OptionKeys.SYSTEM_TIME,1500000000));
+            expression.evaluate(context.getNode(), Collections.singletonMap(OptionKeys.SYSTEM_TIME, 1500000000));
             Assert.fail("No Exception thrown");
         } catch (IllegalArgumentException e) {
             Assert.assertTrue("Invalid Time", true);
@@ -65,7 +65,7 @@ public class DiffFromCurrentEpochOperationTest {
     public void testRule() throws Exception {
         final String ruleRepr = TestUtils.read("/diffFromEpochOperation.rule");
         Rule rule = Rule.create(ruleRepr);
-        JSONObject node = TestJson.obj("{ \"value\": "+System.currentTimeMillis()+" }");
+        JSONObject node = TestJson.obj("{ \"value\": " + System.currentTimeMillis() + " }");
         Assert.assertTrue(rule.matches((Object) node));
     }
 

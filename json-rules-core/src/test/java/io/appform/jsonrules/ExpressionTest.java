@@ -18,7 +18,6 @@
 package io.appform.jsonrules;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.appform.jsonrules.utils.TestJson;
 import com.google.common.collect.Sets;
 import io.appform.jsonrules.expressions.array.InExpression;
 import io.appform.jsonrules.expressions.array.NotInExpression;
@@ -30,6 +29,7 @@ import io.appform.jsonrules.expressions.equality.NotEqualsExpression;
 import io.appform.jsonrules.expressions.meta.ExistsExpression;
 import io.appform.jsonrules.expressions.meta.NotExistsExpression;
 import io.appform.jsonrules.expressions.numeric.*;
+import io.appform.jsonrules.utils.TestJson;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -212,25 +212,25 @@ public class ExpressionTest {
     public void testInExpression() throws Exception {
         Assert.assertTrue(InExpression.builder()
                 .path("$.string")
-                .values(Sets.newHashSet("Hello","World"))
+                .values(Sets.newHashSet("Hello", "World"))
                 .build()
                 .evaluate(context));
 
         Assert.assertFalse(InExpression.builder()
                 .path("$.kid")
-                .values(Sets.newHashSet("Hello","World"))
+                .values(Sets.newHashSet("Hello", "World"))
                 .build()
                 .evaluate(context));
 
         Assert.assertFalse(InExpression.builder()
                 .path("$.abcd")
-                .values(Sets.newHashSet("Hello","World"))
+                .values(Sets.newHashSet("Hello", "World"))
                 .build()
                 .evaluate(context));
 
         Assert.assertFalse(InExpression.builder()
                 .path("$.string")
-                .values(Sets.newHashSet("hello","world"))
+                .values(Sets.newHashSet("hello", "world"))
                 .build()
                 .evaluate(context));
     }
@@ -239,38 +239,38 @@ public class ExpressionTest {
     public void testNotInExpression() throws Exception {
         Assert.assertFalse(NotInExpression.builder()
                 .path("$.string")
-                .values(Sets.newHashSet("Hello","World"))
+                .values(Sets.newHashSet("Hello", "World"))
                 .build()
                 .evaluate(context));
 
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.string")
-                .values(Sets.newHashSet("hello","world"))
+                .values(Sets.newHashSet("hello", "world"))
                 .build()
                 .evaluate(context));
 
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.string")
-                .values(Sets.newHashSet("abcd","efgh"))
+                .values(Sets.newHashSet("abcd", "efgh"))
                 .build()
                 .evaluate(context));
 
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.kid")
-                .values(Sets.newHashSet("stupid","dumb"))
+                .values(Sets.newHashSet("stupid", "dumb"))
                 .build()
                 .evaluate(context));
 
         Assert.assertTrue(NotInExpression.builder()
                 .path("$.NON_EXISITING_KEY")
-                .values(Sets.newHashSet("stupid","dumb"))
+                .values(Sets.newHashSet("stupid", "dumb"))
                 .build()
                 .evaluate(context));
 
         Assert.assertFalse(NotInExpression.builder()
                 .path("$.NON_EXISITING_KEY")
                 .defaultResult(false)
-                .values(Sets.newHashSet("stupid","dumb"))
+                .values(Sets.newHashSet("stupid", "dumb"))
                 .build()
                 .evaluate(context));
     }
