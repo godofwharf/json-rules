@@ -118,10 +118,12 @@ public class ComparisonUtils {
                                              Object value) {
         final boolean nodeMissingOrNullCheck = isNodeMissingOrNull(evaluatedNode);
 
-        // If value is a JSON path, extract it
+        // If value not a json object or array, treat it as a JSON path and extract the value from the context
         if (!(isJSONType(value))) {
             Object raw = JsonPathUtils.read(SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(value));
             value = raw;
+        } else {
+            throw new IllegalStateException("This method should not be used for comparing complex json types (objects, arrays)");
         }
 
         if (isNodeMissingOrNull(value)) {
@@ -151,6 +153,8 @@ public class ComparisonUtils {
         if (!(isJSONType(value))) {
             Object raw = JsonPathUtils.read(SUPPRESS_EXCEPTION_CONFIG, context.getNode(), String.valueOf(value));
             value = raw;
+        } else {
+            throw new IllegalStateException("This method should not be used for comparing complex json types (objects, arrays)");
         }
 
         if (isNodeMissingOrNull(value)) {
