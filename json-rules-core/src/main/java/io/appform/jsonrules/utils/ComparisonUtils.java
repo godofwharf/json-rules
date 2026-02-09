@@ -34,13 +34,36 @@ public class ComparisonUtils {
     private ComparisonUtils() {
     }
 
-    public static int compare(Object evaluatedNode, Object value) {
-        int comparisonResult = 0;
-        if (isNumber(evaluatedNode)) {
-            if (isNumber(value)) {
-                return compare(evaluatedNode, asNumber(value));
+    private static Number toNumber(Object value) {
+        if (value instanceof Number) {
+            return (Number) value;
+        }
+        if (value == null) {
+            return (Number) value;
+        }
+        if (value instanceof String) {
+            final String s = ((String) value).trim();
+            if (s.isEmpty()) {
+                throw new IllegalArgumentException("Cannot convert empty string to number");
             }
-            return compare(evaluatedNode, (Number) value);
+            try {
+                if (s.indexOf('.') >= 0) {
+                    return Double.parseDouble(s);
+                }
+                return Long.parseLong(s);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Cannot convert to number: " + value, e);
+            }
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value ? 1 : 0;
+        }
+        throw new IllegalArgumentException("Cannot convert to number: " + value);
+    }
+
+    public static int compare(Object evaluatedNode, Object value) {
+        if (isNumber(evaluatedNode)) {
+            return compare(evaluatedNode, toNumber(value));
         } else if (isBoolean(evaluatedNode)) {
             if (isBoolean(value)) {
                 return compare(evaluatedNode, asBoolean(value));
@@ -53,8 +76,11 @@ public class ComparisonUtils {
             return compare(evaluatedNode, String.valueOf(value));
         } else if (evaluatedNode instanceof JSONObject) {
             throw new IllegalArgumentException("Object comparisons not supported");
+        } else if (evaluatedNode instanceof JSONArray) {
+            throw new IllegalArgumentException("Array comparisons not supported");
+        } else {
+            return String.valueOf(evaluatedNode).compareTo(String.valueOf(value));
         }
-        return comparisonResult;
     }
 
     public static int compare(Object evaluatedNode, Number value) {

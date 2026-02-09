@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import io.appform.jsonrules.Expression;
 import io.appform.jsonrules.ExpressionEvaluationContext;
 import io.appform.jsonrules.config.JsonRulesConfiguration;
+import org.apache.commons.io.IOUtils;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.io.InputStream;
@@ -53,7 +55,7 @@ public class ExpressionEvaluationBenchmark {
                 if (is == null) {
                     throw new IllegalArgumentException("Resource not found: " + resourcePath);
                 }
-                return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                return IOUtils.toString(is, StandardCharsets.UTF_8);
             }
         }
     }
